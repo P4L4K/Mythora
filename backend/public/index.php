@@ -59,13 +59,13 @@ try {
         $displayName = trim($body['display_name'] ?? 'Creator');
         if (empty($email)) jsonResponse(['error' => 'Email is required'], 400);
 
-        $userId = 'usr_' . bin2hex(random_bytes(8));
+        $userId = \App\Database\Database::generateId('usr');
         $stmt = $pdo->prepare("INSERT INTO profiles (id, email, display_name, credits_balance) VALUES (:id, :email, :name, 50)");
         $stmt->execute([':id' => $userId, ':email' => $email, ':name' => $displayName]);
 
         // Default Brand Profile
         $bp = $pdo->prepare("INSERT INTO brand_profiles (id, user_id, brand_name, visual_aesthetic) VALUES (:id, :uid, 'My Brand', 'Cinematic')");
-        $bp->execute([':id' => 'bp_' . bin2hex(random_bytes(8)), ':uid' => $userId]);
+        $bp->execute([':id' => \App\Database\Database::generateId('bp'), ':uid' => $userId]);
 
         // Create JWT-like session token
         $header = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
@@ -88,7 +88,7 @@ try {
 
         if (!$user) {
             // Auto register demo user for streamlined testing
-            $userId = 'usr_' . bin2hex(random_bytes(8));
+            $userId = \App\Database\Database::generateId('usr');
             $stmt = $pdo->prepare("INSERT INTO profiles (id, email, display_name, credits_balance) VALUES (:id, :email, :name, 50)");
             $stmt->execute([':id' => $userId, ':email' => $email, ':name' => explode('@', $email)[0]]);
             $user = ['id' => $userId, 'email' => $email, 'display_name' => explode('@', $email)[0], 'credits_balance' => 50, 'role' => 'user'];
@@ -128,7 +128,7 @@ try {
     }
 
     if ($method === 'POST' && str_ends_with($requestUri, '/api/projects')) {
-        $projId = 'proj_' . bin2hex(random_bytes(8));
+        $projId = \App\Database\Database::generateId('proj');
         $title = $body['title'] ?? 'Untitled Video Project';
         $inputType = $body['input_type'] ?? 'prompt';
         $sourceContent = $body['source_content'] ?? '';
@@ -139,6 +139,20 @@ try {
         $voiceId = $body['voice_id'] ?? 'rachel';
         $backgroundMusic = $body['background_music'] ?? 'mystic_ambient';
         $selectedHook = $body['selected_hook'] ?? null;
+
+        // Article Ingestion: If input_type is url, extract clean main body content first
+        if ($inputType === 'url' || filter_var($sourceContent, FILTER_VALIDATE_URL)) {
+            $extractor = new \App\Services\ArticleExtractorService();
+            $extracted = $extractor->extractContent($sourceContent);
+            if (!empty($extracted['text']) && strlen($extracted['text']) > 100) {
+                $body['article_content'] = $extracted['text'];
+                if (empty($title) || $title === 'Untitled Video Project') {
+                    $title = $extracted['title'] ?: 'Freelancing Insights';
+                }
+            } else {
+                jsonResponse(['error' => 'Failed to extract meaningful content from the provided article URL. Please verify the link or enter the text manually.'], 422);
+            }
+        }
 
         $stmt = $pdo->prepare("
             INSERT INTO projects (id, user_id, title, input_type, source_content, target_platform, aspect_ratio, target_duration_sec, visual_style, voice_id, background_music, selected_hook, status)
@@ -170,7 +184,7 @@ try {
 
         foreach ($scenes as $s) {
             $scInsert->execute([
-                ':id' => 'sc_' . bin2hex(random_bytes(8)),
+                ':id' => \App\Database\Database::generateId('sc'),
                 ':pid' => $projId,
                 ':order' => $s['scene_order'],
                 ':narr' => $s['narration_text'],
@@ -213,7 +227,7 @@ try {
             jsonResponse(['error' => 'Insufficient credits. Top up required.'], 402);
         }
 
-        $jobId = 'job_' . bin2hex(random_bytes(8));
+        $jobId = \App\Database\Database::generateId('job');
         $jobStmt = $pdo->prepare("
             INSERT INTO generation_jobs (id, user_id, project_id, status, current_stage, progress_percent)
             VALUES (:id, :uid, :pid, 'processing', 'rendering_ffmpeg', 50)
@@ -223,7 +237,7 @@ try {
         // Deduct balance and log transaction
         $pdo->prepare("UPDATE profiles SET credits_balance = credits_balance - 10 WHERE id = :id")->execute([':id' => $currentUser['id']]);
         $pdo->prepare("INSERT INTO credit_transactions (id, user_id, amount, transaction_type, description, reference_id) VALUES (:id, :uid, -10, 'generation_debit', 'Video project generation render', :ref)")
-            ->execute([':id' => 'tx_' . bin2hex(random_bytes(8)), ':uid' => $currentUser['id'], ':ref' => $jobId]);
+            ->execute([':id' => \App\Database\Database::generateId('tx'), ':uid' => $currentUser['id'], ':ref' => $jobId]);
 
         // Execute rendering pipeline
         $renderer = new VideoRendererService();

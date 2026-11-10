@@ -35,7 +35,8 @@ class GenerationService {
    * Polls job progress with reactive callbacks (No fake progress percentages)
    */
   pollJob(jobId, onProgress, onComplete, onError) {
-    const pollInterval = window.VYRAL_CONFIG.POLL_INTERVAL_MS || 2500;
+    const config = window.MYTHORA_CONFIG || window.VYRAL_CONFIG || {};
+    const pollInterval = config.POLL_INTERVAL_MS || 2500;
     
     const intervalId = setInterval(async () => {
       try {

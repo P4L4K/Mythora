@@ -3,52 +3,64 @@
    ========================================================================== */
 
 :root {
-  /* Color Palette - Enchanted Forest */
-  --bg-deep: #070c0a;
-  --bg-surface: #0e1713;
-  --bg-surface-glass: rgba(14, 23, 19, 0.72);
-  --bg-surface-hover: rgba(22, 38, 31, 0.85);
-  
-  /* Emerald Bioluminescence */
-  --emerald-50: #ecfdf5;
-  --emerald-300: #6ee7b7;
-  --emerald-400: #34d399;
-  --emerald-500: #10b981;
-  --emerald-600: #059669;
-  --emerald-glow: rgba(16, 185, 129, 0.35);
-  --emerald-glow-strong: rgba(16, 185, 129, 0.6);
+  /* ==========================================================================
+     SUNLIT MYTHICAL GROVE / FAIRY WOODLAND - LIGHT THEME SYSTEM
+     ========================================================================== */
 
-  /* Arcane Violet Accent */
-  --violet-400: #a78bfa;
-  --violet-500: #8b5cf6;
-  --violet-600: #7c3aed;
-  --violet-glow: rgba(139, 92, 246, 0.35);
+  /* Base Canvas - Serene Ivory & Eggshell */
+  --bg-deep: #F8FAF6;
+  --bg-ivory: #F4F7F1;
+  --bg-mist: #EBF1E6;
+  --bg-sunlight: #FEF9E7;
+  --bg-surface: rgba(255, 255, 255, 0.76);
+  --bg-surface-glass: rgba(255, 255, 255, 0.82);
+  --bg-surface-hover: rgba(255, 255, 255, 0.94);
 
-  /* Cyan Highlight */
-  --cyan-400: #22d3ee;
-  --cyan-500: #06b6d4;
+  /* Forest Olive & Sage Accent Spectrum */
+  --olive-950: #131B10;
+  --olive-900: #1A2414;
+  --olive-800: #2D3E1E;
+  --olive-700: #3D522B;
+  --olive-600: #4B6334;
+  --olive-500: #5D7048;
+  --sage-400: #7E9465;
+  --sage-300: #A2B68C;
+  --sage-200: #C7D7B5;
+  --sage-100: #E4ECD9;
 
-  /* Typography / Neutrals */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-dark: #0f172a;
-  
-  /* Borders & Dividers */
-  --border-glass: rgba(52, 211, 153, 0.18);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(16, 185, 129, 0.6);
+  /* Golden Sunbeam & Jugnu Sparks */
+  --amber-sun: #D97706;
+  --amber-gold: #EAB308;
+  --gold-warm: #F59E0B;
+  --gold-light: #FEF08A;
+  --gold-glow: rgba(234, 179, 8, 0.4);
 
-  /* Shadows & Depth */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 25px var(--emerald-glow);
-  --shadow-glow-violet: 0 0 25px var(--violet-glow);
+  /* Foliage Jade & Lime Embers */
+  --lime-ember: #84CC16;
+  --emerald-mist: #65A30D;
+
+  /* Typography Hierarchy (Strict WCAG AAA Contrast) */
+  --text-primary: #152011;
+  --text-secondary: #47543F;
+  --text-muted: #6B7962;
+  --text-dark: #0D140A;
+
+  /* Borders & Ethereal Glass Surfaces */
+  --border-glass: rgba(126, 148, 101, 0.22);
+  --border-glass-bright: rgba(93, 112, 72, 0.45);
+  --border-subtle: rgba(61, 82, 43, 0.1);
+  --border-active: #4B6334;
+
+  /* Organic Soft Drop Shadows & Sunlit Glows */
+  --shadow-sm: 0 2px 8px rgba(45, 62, 30, 0.04);
+  --shadow-md: 0 10px 30px -10px rgba(45, 62, 30, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 14px 34px -8px rgba(93, 112, 72, 0.16), 0 0 20px rgba(234, 179, 8, 0.12);
+  --shadow-glow: 0 0 25px rgba(234, 179, 8, 0.25);
 
   /* Geometry */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-sm: 9px;
+  --radius-md: 15px;
+  --radius-lg: 22px;
   --radius-full: 9999px;
 
   /* Layout */
@@ -74,13 +86,14 @@ body {
   overflow-x: hidden;
   position: relative;
   background-image: 
-    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(16, 185, 129, 0.12), transparent 70%),
-    radial-gradient(circle 500px at 90% 80%, rgba(139, 92, 246, 0.08), transparent 70%),
-    radial-gradient(circle 400px at 10% 60%, rgba(6, 182, 212, 0.06), transparent 70%);
+    radial-gradient(circle 900px at 50% -10%, rgba(254, 249, 231, 0.8), transparent 70%),
+    radial-gradient(circle 700px at 95% 35%, rgba(235, 241, 230, 0.7), transparent 60%),
+    radial-gradient(circle 800px at 5% 75%, rgba(228, 236, 217, 0.65), transparent 70%),
+    radial-gradient(circle 1000px at 50% 100%, rgba(244, 247, 241, 0.9), transparent 80%);
   background-attachment: fixed;
 }
 
-/* Firefly Particle Canvas Layer */
+/* Ambient Atmospheric Particle Canvas (Strictly in Background Behind All UI Elements) */
 #firefly-canvas {
   position: fixed;
   top: 0;
@@ -126,15 +139,22 @@ a:hover {
   color: var(--emerald-300);
 }
 
-/* Glowing Highlights & Gradients */
+/* Glowing Highlights & Gradients (Sunlit Woodland & Rich Olive) */
 .gradient-text {
-  background: linear-gradient(135deg, #a7f3d0 0%, #34d399 50%, #a78bfa 100%);
+  background: linear-gradient(135deg, #131B10 0%, #2D3E1E 45%, #4B6334 75%, #7E9465 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.7));
+}
+
+.gradient-text-forest {
+  background: linear-gradient(135deg, #1A2414 0%, #3D522B 55%, #5D7048 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.gradient-text-forest {
-  background: linear-gradient(135deg, #6ee7b7 0%, #10b981 100%);
+.gradient-text-gold {
+  background: linear-gradient(135deg, #92400E 0%, #D97706 50%, #EAB308 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -149,45 +169,60 @@ a:hover {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  border: 1px solid var(--border-glass);
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--emerald-300);
+  border: 1px solid rgba(126, 148, 101, 0.28);
+  background: rgba(126, 148, 101, 0.14);
+  color: #2D3E1E;
 }
 
 .badge-violet {
-  background: rgba(139, 92, 246, 0.1);
-  border-color: rgba(139, 92, 246, 0.3);
-  color: var(--violet-400);
+  background: rgba(217, 119, 6, 0.12);
+  border-color: rgba(217, 119, 6, 0.25);
+  color: #B45309;
 }
 
-/* Glassmorphism Surface Cards */
+/* Glassmorphism Surface Cards (Frosted Ivory & Olive) */
 .glass-panel {
   background: var(--bg-surface-glass);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
-  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth), transform var(--transition-smooth);
 }
 
 .glass-panel:hover {
-  border-color: rgba(52, 211, 153, 0.35);
+  border-color: var(--border-glass-bright);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .glass-card {
-  background: rgba(18, 29, 24, 0.65);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
   transition: all var(--transition-smooth);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
 }
 
 .glass-card:hover {
   transform: translateY(-3px);
-  border-color: var(--border-glass);
-  box-shadow: var(--shadow-glow);
+  border-color: rgba(93, 112, 72, 0.45);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* Buttons */
@@ -209,27 +244,47 @@ a:hover {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--emerald-500) 0%, var(--emerald-600) 100%);
-  color: #032b1a;
+  background: linear-gradient(135deg, #3D522B 0%, #5E7A3F 100%);
+  color: #FEFDFB;
   font-weight: 700;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 18px rgba(61, 82, 43, 0.28), 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: rotate(25deg);
+  transition: transform 0.6s ease;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--emerald-400) 0%, var(--emerald-500) 100%);
-  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.55);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(135deg, #334524 0%, #526B37 100%);
+  box-shadow: 0 8px 26px rgba(61, 82, 43, 0.35), 0 0 20px rgba(234, 179, 8, 0.25);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(360%) rotate(25deg);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.85);
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 2px 6px rgba(45, 62, 30, 0.04);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--border-glass);
+  background: #ffffff;
+  border-color: rgba(93, 112, 72, 0.45);
+  color: var(--olive-800);
 }
 
 .btn-violet {
@@ -262,28 +317,35 @@ a:hover {
 .form-label {
   display: block;
   font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--olive-800);
   margin-bottom: 8px;
 }
 
 .form-input, .form-textarea, .form-select {
   width: 100%;
-  background: rgba(8, 14, 11, 0.7);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(126, 148, 101, 0.28);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
-  color: var(--text-primary);
+  color: #131B10;
   font-family: inherit;
   font-size: 0.95rem;
   outline: none;
+  box-shadow: 0 1px 3px rgba(45, 62, 30, 0.04);
   transition: all var(--transition-fast);
 }
 
+.form-input::placeholder, .form-textarea::placeholder {
+  color: #8C9A82;
+  opacity: 0.85;
+}
+
 .form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--emerald-500);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
-  background: rgba(14, 23, 19, 0.85);
+  border-color: #4B6334;
+  box-shadow: 0 0 0 3px rgba(93, 112, 72, 0.15), 0 2px 8px rgba(45, 62, 30, 0.08);
+  background: #ffffff;
+  color: #0F170C;
 }
 
 .form-textarea {

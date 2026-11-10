@@ -12,39 +12,45 @@
   <style>
     .input-mode-tabs {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       margin-bottom: 24px;
-      background: rgba(8, 14, 11, 0.6);
-      padding: 6px;
+      background: rgba(235, 241, 230, 0.7);
+      padding: 5px;
       border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
+      border: 1px solid rgba(126, 148, 101, 0.25);
       width: fit-content;
+      box-shadow: 0 1px 4px rgba(45, 62, 30, 0.04);
     }
     .tab-btn {
       padding: 10px 20px;
       border-radius: var(--radius-sm);
       background: transparent;
       border: none;
-      color: var(--text-secondary);
+      color: #5D7048;
       font-weight: 600;
       cursor: pointer;
       font-size: 0.9rem;
       transition: all var(--transition-fast);
     }
+    .tab-btn:hover {
+      color: #2D3E1E;
+    }
     .tab-btn.active {
-      background: var(--bg-surface-hover);
-      color: var(--emerald-300);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      background: #ffffff;
+      color: #2D3E1E;
+      box-shadow: 0 2px 8px rgba(45, 62, 30, 0.08);
+      border: 1px solid rgba(126, 148, 101, 0.22);
     }
     .hook-selection-section {
       display: none;
       margin-top: 32px;
       padding-top: 32px;
-      border-top: 1px solid var(--border-subtle);
+      border-top: 1px solid rgba(126, 148, 101, 0.2);
     }
   </style>
 </head>
 <body>
+  <!-- Ambient Atmospheric Particle Canvas -->
   <canvas id="firefly-canvas"></canvas>
 
   <div class="app-container">
@@ -93,7 +99,6 @@
           <div class="input-mode-tabs">
             <button class="tab-btn active" data-mode="prompt">💡 Text Prompt</button>
             <button class="tab-btn" data-mode="script">📝 Written Script</button>
-            <button class="tab-btn" data-mode="url">🔗 Article URL</button>
           </div>
 
           <!-- GENERATOR FORM -->

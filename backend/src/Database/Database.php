@@ -1,7 +1,7 @@
 <?php
 /**
- * VYRAL STUDIO - Database Connection & SQLite/Postgres PDO Adapter
- * Supports Supabase PostgreSQL in Cloud and SQLite file fallback for effortless local testing
+ * MYTHORA - Database Connection Adapter
+ * Supports SQLite local dev and Supabase PostgreSQL with clean UUID generation
  */
 
 namespace App\Database;
@@ -12,6 +12,7 @@ use App\Config\Config;
 
 class Database {
     private static ?PDO $instance = null;
+    private static string $driver = 'sqlite';
 
     public static function getConnection(): PDO {
         if (self::$instance === null) {
@@ -21,38 +22,53 @@ class Database {
             $dbPass = Config::get('DB_PASSWORD');
             $dbPort = Config::get('DB_PORT', '5432');
 
-            // If Supabase host is configured, connect to PostgreSQL; otherwise use local SQLite file for standalone running
-            if (!empty($dbHost) && $dbHost !== 'aws-0-region.pooler.supabase.com') {
+            // Connect to PostgreSQL if host configured and reachable
+            if (!empty($dbHost) && !str_contains($dbHost, 'aws-0-region')) {
                 $dsn = "pgsql:host={$dbHost};port={$dbPort};dbname={$dbName};sslmode=require";
                 try {
                     self::$instance = new PDO($dsn, $dbUser, $dbPass, [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                         PDO::ATTR_EMULATE_PREPARES => false,
+                        PDO::ATTR_TIMEOUT => 5,
+                        PDO::ATTR_PERSISTENT => true
                     ]);
+                    self::$driver = 'pgsql';
                 } catch (PDOException $e) {
                     error_log("PostgreSQL connection failed: " . $e->getMessage() . " - Falling back to local SQLite.");
                     self::$instance = self::createSqliteFallback();
+                    self::$driver = 'sqlite';
                 }
             } else {
                 self::$instance = self::createSqliteFallback();
+                self::$driver = 'sqlite';
             }
         }
         return self::$instance;
     }
 
+    public static function generateId(string $prefix = ''): string {
+        if (self::$driver === 'pgsql') {
+            // Generate standard RFC 4122 v4 UUID
+            $data = random_bytes(16);
+            $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+            $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+            return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+        }
+        return ($prefix ? $prefix . '_' : '') . bin2hex(random_bytes(8));
+    }
+
     private static function createSqliteFallback(): PDO {
         $storageDir = __DIR__ . '/../../../storage';
         if (!is_dir($storageDir)) {
-            mkdir($storageDir, 0777, true);
+            @mkdir($storageDir, 0777, true);
         }
-        $sqliteFile = $storageDir . '/vyral_dev.sqlite';
+        $sqliteFile = $storageDir . '/mythora_dev.sqlite';
         $pdo = new PDO("sqlite:{$sqliteFile}", null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]);
 
-        // Auto-initialize tables if not present
         self::initSqliteTables($pdo);
         return $pdo;
     }
@@ -164,4 +180,3 @@ class Database {
         ");
     }
 }
-

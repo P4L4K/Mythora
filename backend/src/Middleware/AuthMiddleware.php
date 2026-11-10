@@ -66,7 +66,7 @@ class AuthMiddleware {
             ]);
 
             // Default Brand Profile
-            $bpId = 'bp_' . bin2hex(random_bytes(8));
+            $bpId = \App\Database\Database::generateId('bp');
             $bp = $pdo->prepare("INSERT INTO brand_profiles (id, user_id, brand_name, visual_aesthetic) VALUES (:id, :uid, 'My Brand', 'Cinematic')");
             $bp->execute([':id' => $bpId, ':uid' => $userId]);
 

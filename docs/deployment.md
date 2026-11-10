@@ -40,7 +40,6 @@ This guide details how to deploy MYTHORA across **Render** (Frontend Static Site
    SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
    SUPABASE_STORAGE_BUCKET=mythora-media
    GEMINI_API_KEY=<your-gemini-api-key>
-   ELEVENLABS_API_KEY=<your-elevenlabs-api-key>
    FFMPEG_PATH=ffmpeg
    ```
 5. Deploy the Web Service. Copy the assigned URL (e.g., `https://mythora-api.onrender.com`).

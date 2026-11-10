@@ -43,8 +43,8 @@
       flex: 0 0 110px;
       height: 65px;
       border-radius: var(--radius-sm);
-      background: rgba(14, 23, 19, 0.8);
-      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(126, 148, 101, 0.25);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -52,15 +52,17 @@
       cursor: pointer;
       transition: all var(--transition-fast);
       position: relative;
+      box-shadow: 0 1px 4px rgba(45, 62, 30, 0.04);
     }
     .timeline-node.active {
-      border-color: var(--emerald-400);
-      background: rgba(16, 185, 129, 0.15);
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      border-color: #4B6334;
+      background: rgba(126, 148, 101, 0.15);
+      box-shadow: 0 0 12px rgba(93, 112, 72, 0.25);
     }
   </style>
 </head>
 <body>
+  <!-- Ambient Atmospheric Particle Canvas -->
   <canvas id="firefly-canvas"></canvas>
 
   <div class="app-container">
@@ -181,9 +183,21 @@
         const statusBadge = document.getElementById('video-render-status');
 
         if (res.video && res.video.download_url) {
-          videoPlayer.src = res.video.download_url;
+          // If video URL is relative (e.g. /renders/...), resolve it against the backend API host
+          let videoSrc = res.video.download_url;
+          if (videoSrc.startsWith('/')) {
+            const apiBase = (window.MYTHORA_CONFIG && window.MYTHORA_CONFIG.API_BASE_URL) || 'http://localhost:8000/api';
+            // In local development, ensure we always target localhost:8000 for backend static assets
+            const origin = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+              ? 'http://localhost:8000'
+              : new URL(apiBase, window.location.origin).origin;
+            videoSrc = origin + videoSrc;
+          }
+
+          videoPlayer.src = videoSrc;
+          videoPlayer.load();
           downloadBtn.disabled = false;
-          downloadBtn.onclick = () => window.open(res.video.download_url, '_blank');
+          downloadBtn.onclick = () => window.open(videoSrc, '_blank');
           statusBadge.textContent = 'Render Complete';
           statusBadge.className = 'badge';
         } else {
@@ -227,6 +241,10 @@
               <span class="badge">Scene ${idx + 1}</span>
               <span style="font-size: 0.85rem; color: var(--text-muted);">${s.estimated_duration}s</span>
             </div>
+            <!-- AUDIO PREVIEW (BROWSER SPEECH SYNTHESIS FALLBACK) -->
+            <button class="btn btn-secondary btn-sm" onclick="previewSceneAudio('${s.id}')">
+              <span>🔊 Preview Audio</span>
+            </button>
             <!-- FEATURE D: REGENERATE SINGLE SCENE BUTTON -->
             <button class="btn btn-secondary btn-sm" onclick="regenerateSingleScene('${s.id}', ${idx})">
               <span>🔄 Re-generate Scene</span>
@@ -274,6 +292,22 @@
       const card = document.getElementById(`scene-card-${idx}`);
       if (card) {
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+
+    // Browser SpeechSynthesis preview fallback (zero latency, instant client-side testing)
+    window.previewSceneAudio = function(sceneId) {
+      const narrationText = document.getElementById(`narration-${sceneId}`)?.value;
+      if (!narrationText) return;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // cancel any active speech
+        const utterance = new SpeechSynthesisUtterance(narrationText);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('Browser speech synthesis is not supported on this device.');
       }
     };
 

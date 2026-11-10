@@ -10,3 +10,6 @@ window.MYTHORA_CONFIG = {
   SUPABASE_ANON_KEY: window.__ENV_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
   POLL_INTERVAL_MS: 2500
 };
+
+// Backwards compatibility alias
+window.VYRAL_CONFIG = window.MYTHORA_CONFIG;

@@ -1,90 +1,354 @@
 /**
- * VYRAL STUDIO - Ambient Bioluminescent Firefly Particles Engine
- * Lightweight, hardware accelerated HTML5 Canvas effect
+ * MYTHORA - Ambient Fairy Woodland Engine (Sunlit Mythical Grove)
+ * Refined Butterfly Motion Specification:
+ * - Layering: Single background canvas layer behind all UI text, cards, and buttons (z-index: 0, pointer-events: none).
+ * - Count & Frequency: Exactly 2–3 butterflies, staggered entry intervals, natural resting/drifting pauses.
+ * - Flight Path: Gentle, organic sinusoidal curved spline paths with banking turns and graceful glides.
+ * - Animation: Subtle wing flapping that naturally alternates with effortless gliding phases and gentle bank rotation.
+ * - Exit Interaction: Butterflies occasionally drift toward screen margins and fade away before re-entering from another edge.
  */
-(function initFireflies() {
+(function initFairyWoodlandAtmosphere() {
   const canvas = document.getElementById('firefly-canvas');
   if (!canvas) return;
 
-  const ctx = canvas.getContext('2d');
-  let width, height;
-  let particles = [];
-  const PARTICLE_COUNT = 38;
-
-  function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+  // Remove foreground canvas if present so all butterflies stay safely behind UI text and buttons
+  const fgCanvas = document.getElementById('butterfly-foreground-canvas');
+  if (fgCanvas && fgCanvas.parentNode) {
+    fgCanvas.parentNode.removeChild(fgCanvas);
   }
 
-  class Firefly {
+  const ctx = canvas.getContext('2d');
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  // Gentle mouse avoidance
+  const mouse = { x: -1000, y: -1000, radius: 140 };
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  }, { passive: true });
+  window.addEventListener('mouseleave', () => {
+    mouse.x = -1000;
+    mouse.y = -1000;
+  });
+
+  window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  /* -------------------------------------------------------------
+   * 1. JUGNUS (Sunlit Golden-Topaz & Amber Fireflies)
+   * ------------------------------------------------------------- */
+  const JUGNU_COUNT = 22;
+  class Jugnu {
     constructor() {
-      this.reset();
+      this.reset(true);
     }
 
-    reset() {
+    reset(initial = false) {
       this.x = Math.random() * width;
-      this.y = Math.random() * height;
-      this.radius = Math.random() * 2.2 + 0.8;
-      this.vx = (Math.random() - 0.5) * 0.45;
-      this.vy = (Math.random() - 0.5) * 0.45;
-      this.alpha = Math.random() * 0.6 + 0.2;
-      this.alphaChange = (Math.random() * 0.015 + 0.005) * (Math.random() > 0.5 ? 1 : -1);
-      // Colors: Emerald (majority) with occasional Violet or Cyan sparks
+      this.y = initial ? Math.random() * height : height + 20;
+      this.radius = Math.random() * 2.0 + 1.1;
+      this.baseAlpha = Math.random() * 0.38 + 0.32;
+      this.pulseSpeed = Math.random() * 0.025 + 0.012;
+      this.pulseTimer = Math.random() * Math.PI * 2;
+      this.vx = (Math.random() - 0.5) * 0.42;
+      this.vy = -(Math.random() * 0.35 + 0.14);
+      this.sineOffset = Math.random() * Math.PI * 2;
+      this.sineSpeed = Math.random() * 0.018 + 0.008;
+
       const roll = Math.random();
-      if (roll > 0.3) {
-        this.color = '16, 185, 129'; // emerald
-      } else if (roll > 0.1) {
-        this.color = '139, 92, 246'; // violet
+      if (roll > 0.45) {
+        this.color = '217, 119, 6';   // Amber Sun (#D97706)
+      } else if (roll > 0.18) {
+        this.color = '202, 138, 4';   // Golden Ochre (#CA8A04)
       } else {
-        this.color = '6, 182, 212'; // cyan
+        this.color = '101, 163, 13';  // Forest Green Sun (#65A30D)
       }
     }
 
     update() {
-      this.x += this.vx;
+      this.pulseTimer += this.pulseSpeed;
+      this.sineOffset += this.sineSpeed;
+      
+      this.x += this.vx + Math.sin(this.sineOffset) * 0.42;
       this.y += this.vy;
-      this.alpha += this.alphaChange;
 
-      if (this.alpha <= 0.1 || this.alpha >= 0.85) {
-        this.alphaChange = -this.alphaChange;
+      const dx = this.x - mouse.x;
+      const dy = this.y - mouse.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < mouse.radius && dist > 0) {
+        const force = (mouse.radius - dist) / mouse.radius;
+        this.x += (dx / dist) * force * 2.0;
+        this.y += (dy / dist) * force * 2.0;
       }
 
-      if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+      if (this.y < -20 || this.x < -20 || this.x > width + 20) {
+        this.reset();
+      }
+    }
+
+    draw() {
+      const alpha = Math.max(0.16, this.baseAlpha + Math.sin(this.pulseTimer) * 0.28);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color}, ${alpha})`;
+      ctx.shadowBlur = this.radius * 6;
+      ctx.shadowColor = `rgba(${this.color}, ${alpha * 0.75})`;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  /* -------------------------------------------------------------
+   * 2. DRIFTING SPECTRAL BOTANICAL LEAVES
+   * ------------------------------------------------------------- */
+  const LEAF_COUNT = 7;
+  class SpectralLeaf {
+    constructor() {
+      this.reset(true);
+    }
+
+    reset(initial = false) {
+      this.x = Math.random() * width;
+      this.y = initial ? Math.random() * height : -30;
+      this.size = Math.random() * 7 + 5;
+      this.speedY = Math.random() * 0.45 + 0.3;
+      this.swayAngle = Math.random() * Math.PI * 2;
+      this.swaySpeed = Math.random() * 0.014 + 0.008;
+      this.rotation = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.018;
+      this.flip = 0;
+      this.flipSpeed = Math.random() * 0.025 + 0.012;
+      this.alpha = Math.random() * 0.28 + 0.25;
+
+      const roll = Math.random();
+      if (roll > 0.5) {
+        this.color = '93, 112, 72';   // Mid Olive
+      } else if (roll > 0.2) {
+        this.color = '126, 148, 101'; // Sage
+      } else {
+        this.color = '217, 119, 6';   // Amber Gold
+      }
+    }
+
+    update() {
+      this.y += this.speedY;
+      this.swayAngle += this.swaySpeed;
+      this.x += Math.sin(this.swayAngle) * 0.7;
+      this.rotation += this.rotSpeed;
+      this.flip += this.flipSpeed;
+
+      if (this.y > height + 30) {
         this.reset();
       }
     }
 
     draw() {
       ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      const scaleX = Math.cos(this.flip);
+      ctx.scale(scaleX, 1);
+
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
-      ctx.shadowBlur = this.radius * 6;
-      ctx.shadowColor = `rgba(${this.color}, 0.8)`;
+      ctx.moveTo(0, -this.size);
+      ctx.quadraticCurveTo(this.size * 0.65, 0, 0, this.size);
+      ctx.quadraticCurveTo(-this.size * 0.65, 0, 0, -this.size);
+      ctx.fillStyle = `rgba(${this.color}, ${this.alpha * 0.75})`;
+      ctx.shadowBlur = 5;
+      ctx.shadowColor = `rgba(${this.color}, 0.3)`;
       ctx.fill();
+
+      ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 0.5})`;
+      ctx.lineWidth = 0.75;
+      ctx.beginPath();
+      ctx.moveTo(0, -this.size * 0.8);
+      ctx.lineTo(0, this.size * 0.8);
+      ctx.stroke();
+
       ctx.restore();
     }
   }
 
-  function setup() {
-    resize();
-    particles = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new Firefly());
+  /* -------------------------------------------------------------
+   * 3. GENTLE CURVED SPIRIT BUTTERFLIES (2-3 At Most, Behind UI)
+   * ------------------------------------------------------------- */
+  const BUTTERFLY_COUNT = 3;
+  class GentleCurvedButterfly {
+    constructor(idx) {
+      this.idx = idx;
+      // Stagger initial appearances with different time offsets
+      this.time = idx * 3.8 + Math.random() * 2;
+      this.delay = idx * 120; // Staggered spawn delay in frames
+      this.active = false;
+      this.reset();
+    }
+
+    reset() {
+      // Pick a starting edge (left or right)
+      this.fromLeft = Math.random() > 0.5;
+      this.x = this.fromLeft ? -50 : width + 50;
+      this.y = Math.random() * (height * 0.65) + 60;
+
+      // Base flight speed and curving trajectory parameters
+      this.baseSpeedX = (this.fromLeft ? 1 : -1) * (0.65 + Math.random() * 0.4);
+      this.baseSpeedY = (Math.random() - 0.5) * 0.35;
+      
+      // Multi-frequency smooth curved floating path (smooth Lissajous / Bézier-like curve)
+      this.curveFreq1 = 0.008 + Math.random() * 0.005;
+      this.curveFreq2 = 0.015 + Math.random() * 0.008;
+      this.curveAmpY = 1.2 + Math.random() * 0.8;
+      this.curveAmpX = 0.6 + Math.random() * 0.4;
+
+      // Wing animation: subtle flapping with gentle gliding pauses
+      this.wingAngle = 0;
+      this.wingSpeed = 0.12 + Math.random() * 0.04; // Slower, more graceful flapping
+      this.glideTimer = 0;
+      this.isGliding = false;
+
+      // Size & orientation
+      this.size = 10 + Math.random() * 3.5;
+      this.heading = this.fromLeft ? 0 : Math.PI;
+      this.bankAngle = 0;
+
+      // Opacity fades gracefully near screen borders
+      this.opacity = 0;
+      this.targetOpacity = 0.55 + Math.random() * 0.2;
+
+      // Color scheme: soft botanical olive or sage green with warm amber core
+      this.wingHue = this.idx % 2 === 0 ? '93, 112, 72' : '101, 163, 13';
+      this.active = true;
+    }
+
+    update() {
+      if (this.delay > 0) {
+        this.delay--;
+        return;
+      }
+
+      this.time += 1;
+
+      // 1. Natural flapping vs gliding cycle
+      this.glideTimer++;
+      if (this.glideTimer > 180 && Math.random() < 0.02) {
+        this.isGliding = !this.isGliding;
+        this.glideTimer = 0;
+      }
+
+      if (!this.isGliding) {
+        this.wingAngle += this.wingSpeed;
+      } else {
+        // Slow gentle drift hold while gliding
+        this.wingAngle = Math.PI * 0.35 + Math.sin(this.time * 0.03) * 0.12;
+      }
+
+      // 2. Smooth, continuous curved floating path
+      const curvedVy = Math.sin(this.time * this.curveFreq1) * this.curveAmpY + 
+                       Math.cos(this.time * this.curveFreq2) * 0.6;
+      const curvedVx = this.baseSpeedX + Math.sin(this.time * this.curveFreq2) * this.curveAmpX;
+
+      this.x += curvedVx;
+      this.y += this.baseSpeedY + curvedVy;
+
+      // 3. Natural banking rotation aligning with movement path
+      const targetHeading = Math.atan2(curvedVy, curvedVx);
+      this.heading += (targetHeading - this.heading) * 0.06;
+      this.bankAngle = Math.sin(this.time * 0.04) * 0.18;
+
+      // 4. Smooth edge opacity fade-in / fade-out
+      const edgeDistX = Math.min(this.x, width - this.x);
+      const edgeDistY = Math.min(this.y, height - this.y);
+      const edgeMargin = 120;
+
+      if (edgeDistX < edgeMargin || edgeDistY < edgeMargin) {
+        const edgeFactor = Math.max(0, Math.min(edgeDistX, edgeDistY) / edgeMargin);
+        this.opacity = Math.min(this.opacity, edgeFactor * this.targetOpacity);
+      } else {
+        this.opacity += (this.targetOpacity - this.opacity) * 0.04;
+      }
+
+      // 5. When naturally drifting off-screen, pause and spawn from a different edge
+      if (this.x < -80 || this.x > width + 80 || this.y < -60 || this.y > height + 60) {
+        this.active = false;
+        this.delay = 80 + Math.floor(Math.random() * 180); // Staggered resting pause
+        this.reset();
+      }
+    }
+
+    draw() {
+      if (!this.active || this.delay > 0 || this.opacity <= 0.02) return;
+
+      const flap = Math.abs(Math.sin(this.wingAngle));
+
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.heading + this.bankAngle);
+
+      // Soft ambient aura behind UI
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = 'rgba(217, 119, 6, 0.28)';
+
+      // Left wing
+      ctx.save();
+      ctx.scale(flap, 1);
+      ctx.beginPath();
+      ctx.ellipse(-this.size * 0.72, -this.size * 0.2, this.size * 0.85, this.size * 0.52, -Math.PI / 6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.wingHue}, ${this.opacity * 0.65})`;
+      ctx.fill();
+      ctx.restore();
+
+      // Right wing
+      ctx.save();
+      ctx.scale(flap, 1);
+      ctx.beginPath();
+      ctx.ellipse(this.size * 0.72, -this.size * 0.2, this.size * 0.85, this.size * 0.52, Math.PI / 6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.wingHue}, ${this.opacity * 0.65})`;
+      ctx.fill();
+      ctx.restore();
+
+      // Delicate amber central body
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 1.4, this.size * 0.42, 0, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(217, 119, 6, ${this.opacity * 0.9})`;
+      ctx.shadowBlur = 5;
+      ctx.shadowColor = 'rgba(234, 179, 8, 0.4)';
+      ctx.fill();
+
+      ctx.restore();
     }
   }
 
-  function loop() {
+  // System instances
+  const jugnus = Array.from({ length: JUGNU_COUNT }, () => new Jugnu());
+  const leaves = Array.from({ length: LEAF_COUNT }, () => new SpectralLeaf());
+  const butterflies = Array.from({ length: BUTTERFLY_COUNT }, (_, idx) => new GentleCurvedButterfly(idx));
+
+  function animate() {
     ctx.clearRect(0, 0, width, height);
-    for (let i = 0; i < particles.length; i++) {
-      particles[i].update();
-      particles[i].draw();
+
+    // 1. Drifting Leaves
+    for (let i = 0; i < leaves.length; i++) {
+      leaves[i].update();
+      leaves[i].draw();
     }
-    requestAnimationFrame(loop);
+
+    // 2. Jugnus (Warm Amber Fireflies)
+    for (let i = 0; i < jugnus.length; i++) {
+      jugnus[i].update();
+      jugnus[i].draw();
+    }
+
+    // 3. Gentle Curved Butterflies (Strictly behind cards, text, and buttons)
+    for (let i = 0; i < butterflies.length; i++) {
+      butterflies[i].update();
+      butterflies[i].draw();
+    }
+
+    requestAnimationFrame(animate);
   }
 
-  window.addEventListener('resize', resize);
-  setup();
-  loop();
+  animate();
 })();
-
