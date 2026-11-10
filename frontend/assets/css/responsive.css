@@ -1,0 +1,238 @@
+/* ==========================================================================
+   VYRAL STUDIO - DYNAMIC SCREEN RESPONSIVENESS & MEDIA QUERIES
+   Certified Viewports:
+   - 1920x1080 (Full HD Desktop)
+   - 1440x900 (Widescreen Laptop)
+   - 1366x768 (Standard Laptop)
+   - 1024x768 (Tablet Landscape)
+   - 768x1024 (Tablet Portrait)
+   - 390x844 (Modern Smartphone - iPhone 13/14/15)
+   - 360x800 (Android Smartphone - Galaxy / Pixel)
+   ========================================================================== */
+
+/* 1. FLUID GRID SYSTEM (Auto-wrapping using clamp and minmax) */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+/* 2. LARGE DESKTOP (1920x1080 & Widescreen Monitors) */
+@media (min-width: 1440px) {
+  .page-content {
+    max-width: 1560px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+/* 3. LAPTOP RESOLUTIONS (1440x900 & 1366x768) */
+@media (max-width: 1366px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .editor-layout {
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+  }
+}
+
+/* 4. TABLETS (1024x768 Landscape & 768x1024 Portrait) */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    box-shadow: none;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Backdrop overlay when sidebar is open */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 95;
+  }
+
+  .sidebar-backdrop.active {
+    display: block;
+  }
+
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .menu-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Smart Scene Editor: Rearrange layout intelligently into stacked workflow */
+  .editor-layout {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 24px;
+  }
+
+  .editor-layout > div:last-child {
+    position: static !important;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .welcome-hero {
+    padding: 28px;
+  }
+
+  .welcome-decor {
+    font-size: 3.5rem !important;
+  }
+}
+
+/* 5. SMARTPHONES & MOBILE (390x844 & 360x800) */
+@media (max-width: 767px) {
+  :root {
+    --header-height: 64px;
+  }
+
+  .page-content {
+    padding: 16px 14px;
+  }
+
+  .top-navbar {
+    padding: 0 16px;
+  }
+
+  .landing-header {
+    padding: 14px 16px;
+  }
+
+  .landing-header nav a:not(.btn) {
+    display: none;
+  }
+
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Form & hero optimizations */
+  .hero-section {
+    padding: 50px 14px 30px;
+  }
+
+  .hero-title {
+    font-size: 2.1rem;
+    line-height: 1.2;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .welcome-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 16px;
+  }
+
+  .welcome-decor {
+    display: none;
+  }
+
+  .welcome-hero .btn {
+    width: 100%;
+  }
+
+  .input-mode-tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 4px;
+  }
+
+  .tab-btn {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  /* Scene editor cards on mobile */
+  .scene-card {
+    padding: 16px !important;
+  }
+
+  .scene-card .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .video-preview-player {
+    max-height: 480px;
+  }
+
+  .portal-box {
+    padding: 24px 16px;
+    width: 95%;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-number {
+    font-size: 1.8rem;
+  }
+}
+
+/* 6. ULTRA-COMPACT MOBILE (< 360px) */
+@media (max-width: 359px) {
+  .brand-logo span {
+    font-size: 1rem;
+  }
+
+  .tab-btn {
+    font-size: 0.72rem;
+    padding: 6px 2px;
+  }
+}

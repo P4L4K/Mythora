@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">🛡️</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">ADMIN</span></span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item"><span>🏠</span> <span>User Studio</span></a>
+        <a href="/pages/admin.html" class="nav-item active"><span>🛡️</span> <span>Admin Telemetry</span></a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <h3 style="font-size: 1.15rem; font-weight: 600;">System Telemetry & Administration</h3>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- GLOBAL STATS -->
+        <div class="grid-4" style="margin-bottom: 32px;">
+          <div class="glass-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem;">Total Users</span>
+            <div style="font-size: 2.2rem; font-weight: 800;" id="stat-total-users">--</div>
+          </div>
+          <div class="glass-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem;">Total Videos Rendered</span>
+            <div style="font-size: 2.2rem; font-weight: 800;" id="stat-total-renders">--</div>
+          </div>
+          <div class="glass-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem;">Active Queue Jobs</span>
+            <div style="font-size: 2.2rem; font-weight: 800; color: var(--emerald-400);" id="stat-active-jobs">--</div>
+          </div>
+          <div class="glass-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem;">API Health</span>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #34d399; margin-top: 8px;">Normal 100%</div>
+          </div>
+        </div>
+
+        <!-- RECENT GENERATION JOBS TABLE -->
+        <div class="glass-panel" style="padding: 24px;">
+          <h4 style="margin-bottom: 16px;">Background Worker Jobs (FFmpeg Queue)</h4>
+          <div class="table-responsive">
+            <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted);">
+                  <th style="padding: 10px;">Job ID</th>
+                  <th style="padding: 10px;">User</th>
+                  <th style="padding: 10px;">Current Stage</th>
+                  <th style="padding: 10px;">Status</th>
+                  <th style="padding: 10px;">Started At</th>
+                </tr>
+              </thead>
+              <tbody id="admin-jobs-body">
+                <tr><td colspan="5" style="padding: 20px; text-align: center;">Loading jobs telemetry...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script>
+    window.authService.requireAuth();
+
+    async function loadAdminStats() {
+      try {
+        const stats = await window.apiClient.get('/admin/statistics');
+        document.getElementById('stat-total-users').textContent = stats.total_users ?? 0;
+        document.getElementById('stat-total-renders').textContent = stats.total_renders ?? 0;
+        document.getElementById('stat-active-jobs').textContent = stats.active_jobs ?? 0;
+
+        const jobsRes = await window.apiClient.get('/admin/jobs');
+        const jobs = jobsRes.jobs || [];
+        const tbody = document.getElementById('admin-jobs-body');
+
+        if (jobs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="padding: 24px; text-align: center;">No active or past jobs found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = jobs.map(j => `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <td style="padding: 12px 10px; font-family: monospace;">${j.id.slice(0, 8)}...</td>
+            <td style="padding: 12px 10px;">${j.user_email || j.user_id.slice(0, 8)}</td>
+            <td style="padding: 12px 10px;"><code>${j.current_stage}</code></td>
+            <td style="padding: 12px 10px;"><span class="badge ${j.status === 'completed' ? '' : 'badge-violet'}">${j.status}</span></td>
+            <td style="padding: 12px 10px;">${new Date(j.created_at).toLocaleTimeString()}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Admin telemetry failed:', err);
+      }
+    }
+
+    loadAdminStats();
+  </script>
+</body>
+</html>
+

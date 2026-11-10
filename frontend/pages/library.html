@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Library - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item"><span>🏠</span> <span>Dashboard</span></a>
+        <a href="/pages/generator.html" class="nav-item"><span>🪄</span> <span>Create Video</span></a>
+        <a href="/pages/library.html" class="nav-item active"><span>📁</span> <span>Project Library</span></a>
+        <a href="/pages/brand-studio.html" class="nav-item"><span>🧬</span> <span>Content DNA</span></a>
+        <a href="/pages/credits.html" class="nav-item"><span>⚡</span> <span>Credits & Plans</span></a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <h3 style="font-size: 1.15rem; font-weight: 600;">Project Library</h3>
+        </div>
+        <a href="/pages/generator.html" class="btn btn-primary btn-sm">+ New Video</a>
+      </header>
+
+      <main class="page-content">
+        <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2>Your Video Archive</h2>
+            <p>Access, manage, preview, and export all generated videos.</p>
+          </div>
+        </div>
+
+        <div id="library-grid" class="grid-3">
+          <div class="glass-panel" style="padding: 40px; text-align: center; grid-column: 1 / -1;">
+            <p>Loading your projects...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script src="/services/projects.js"></script>
+  <script>
+    window.authService.requireAuth();
+
+    async function loadLibrary() {
+      try {
+        const res = await window.projectsService.listProjects();
+        const projects = res.projects || [];
+        const grid = document.getElementById('library-grid');
+
+        if (projects.length === 0) {
+          grid.innerHTML = `
+            <div class="glass-panel" style="padding: 48px; text-align: center; grid-column: 1 / -1;">
+              <div style="font-size: 3rem; margin-bottom: 12px;">📭</div>
+              <h3>No Videos Yet</h3>
+              <p style="margin-top: 8px; margin-bottom: 20px;">Transform your first written idea into a viral video today.</p>
+              <a href="/pages/generator.html" class="btn btn-primary btn-sm">Create New Video</a>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = projects.map(p => `
+          <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="badge ${p.status === 'ready' ? '' : 'badge-violet'}">${p.status}</span>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">${new Date(p.created_at).toLocaleDateString()}</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">${escapeHtml(p.title || 'Untitled Project')}</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                Platform: <strong>${p.target_platform}</strong> | Format: <strong>${p.aspect_ratio}</strong>
+              </p>
+            </div>
+
+            <div style="display: flex; gap: 8px; border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+              <a href="/pages/editor.html?project_id=${p.id}" class="btn btn-secondary btn-sm" style="flex: 1;">Open Editor</a>
+              <button class="btn btn-secondary btn-sm" style="color: #f87171;" onclick="deleteProject('${p.id}')">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Library loading error:', err);
+      }
+    }
+
+    window.deleteProject = async function(id) {
+      if (!confirm('Are you sure you want to delete this project?')) return;
+      try {
+        await window.projectsService.deleteProject(id);
+        loadLibrary();
+      } catch (err) {
+        alert('Could not delete project: ' + err.message);
+      }
+    };
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    loadLibrary();
+  </script>
+</body>
+</html>
+

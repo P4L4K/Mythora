@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Scene Editor - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      align-items: start;
+    }
+    .video-preview-player {
+      width: 100%;
+      aspect-ratio: 9/16;
+      max-height: 620px;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border-glass);
+      box-shadow: var(--shadow-glow);
+    }
+    .video-preview-player video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .scene-timeline-strip {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 12px 0 16px;
+      margin-bottom: 24px;
+    }
+    .timeline-node {
+      flex: 0 0 110px;
+      height: 65px;
+      border-radius: var(--radius-sm);
+      background: rgba(14, 23, 19, 0.8);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+    .timeline-node.active {
+      border-color: var(--emerald-400);
+      background: rgba(16, 185, 129, 0.15);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item"><span>🏠</span> <span>Dashboard</span></a>
+        <a href="/pages/generator.html" class="nav-item"><span>🪄</span> <span>Create Video</span></a>
+        <a href="/pages/library.html" class="nav-item"><span>📁</span> <span>Project Library</span></a>
+        <a href="/pages/brand-studio.html" class="nav-item"><span>🧬</span> <span>Content DNA</span></a>
+        <a href="/pages/credits.html" class="nav-item"><span>⚡</span> <span>Credits & Plans</span></a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <a href="/pages/library.html" style="font-size: 0.9rem; color: var(--text-muted);">&larr; Library</a>
+          <span style="color: var(--text-muted);">/</span>
+          <h3 id="project-header-title" style="font-size: 1.15rem; font-weight: 600;">Smart Scene Editor</h3>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button id="download-video-btn" class="btn btn-secondary btn-sm" disabled>
+            <span>📥 Download MP4</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- SCENE TIMELINE STRIP -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--emerald-400);">Timeline Navigation</span>
+            <span id="scene-counter" style="font-size: 0.85rem; color: var(--text-muted);">0 Scenes</span>
+          </div>
+          <div class="scene-timeline-strip" id="timeline-strip">
+            <!-- Timeline nodes dynamically generated -->
+          </div>
+        </div>
+
+        <!-- TWO COLUMN WORKSPACE -->
+        <div class="editor-layout">
+          <!-- LEFT: SCENE EDITING CARDS -->
+          <div id="scenes-container" style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="glass-panel" style="padding: 32px; text-align: center;">
+              <p>Loading project scenes...</p>
+            </div>
+          </div>
+
+          <!-- RIGHT: LIVE VIDEO / SCENE PREVIEW -->
+          <div style="position: sticky; top: calc(var(--header-height) + 16px);">
+            <div class="glass-panel" style="padding: 16px;">
+              <div class="video-preview-player" id="video-player-container">
+                <video id="main-video-player" controls preload="metadata">
+                  <source src="" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+
+              <div style="margin-top: 16px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 12px;">
+                  <span style="color: var(--text-muted);">Status:</span>
+                  <span id="video-render-status" class="badge">Checking...</span>
+                </div>
+                <button id="render-full-video-btn" class="btn btn-primary" style="width: 100%;">
+                  <span>⚡ Re-render Full Video</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script src="/services/projects.js"></script>
+  <script src="/services/generation.js"></script>
+  <script>
+    window.authService.requireAuth();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('project_id');
+
+    if (!projectId) {
+      alert('No project ID specified. Redirecting to Library.');
+      window.location.href = '/pages/library.html';
+    }
+
+    let currentProject = null;
+    let scenesList = [];
+
+    async function loadProjectData() {
+      try {
+        const res = await window.projectsService.getProject(projectId);
+        currentProject = res.project;
+        scenesList = res.scenes || [];
+
+        document.getElementById('project-header-title').textContent = currentProject.title || 'Untitled Project';
+        document.getElementById('scene-counter').textContent = `${scenesList.length} Scenes`;
+
+        // Update video preview
+        const videoPlayer = document.getElementById('main-video-player');
+        const downloadBtn = document.getElementById('download-video-btn');
+        const statusBadge = document.getElementById('video-render-status');
+
+        if (res.video && res.video.download_url) {
+          videoPlayer.src = res.video.download_url;
+          downloadBtn.disabled = false;
+          downloadBtn.onclick = () => window.open(res.video.download_url, '_blank');
+          statusBadge.textContent = 'Render Complete';
+          statusBadge.className = 'badge';
+        } else {
+          statusBadge.textContent = currentProject.status;
+          statusBadge.className = 'badge badge-violet';
+        }
+
+        renderTimeline();
+        renderSceneCards();
+      } catch (err) {
+        console.error('Error loading project:', err);
+        alert('Failed to load project: ' + err.message);
+      }
+    }
+
+    function renderTimeline() {
+      const strip = document.getElementById('timeline-strip');
+      strip.innerHTML = scenesList.map((s, idx) => `
+        <div class="timeline-node ${idx === 0 ? 'active' : ''}" data-idx="${idx}" onclick="scrollToScene(${idx})">
+          <span style="font-weight: 700; font-size: 0.95rem;">Scene ${idx + 1}</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">${s.estimated_duration}s</span>
+        </div>
+      `).join('');
+    }
+
+    function renderSceneCards() {
+      const container = document.getElementById('scenes-container');
+      if (scenesList.length === 0) {
+        container.innerHTML = `
+          <div class="glass-panel" style="padding: 32px; text-align: center;">
+            <p>No scenes found. Click Re-render Full Video to generate scenes.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = scenesList.map((s, idx) => `
+        <div class="glass-panel scene-card" id="scene-card-${idx}" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="badge">Scene ${idx + 1}</span>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">${s.estimated_duration}s</span>
+            </div>
+            <!-- FEATURE D: REGENERATE SINGLE SCENE BUTTON -->
+            <button class="btn btn-secondary btn-sm" onclick="regenerateSingleScene('${s.id}', ${idx})">
+              <span>🔄 Re-generate Scene</span>
+            </button>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <div class="form-group">
+                <label class="form-label">Narration Script</label>
+                <textarea class="form-textarea" id="narration-${s.id}" rows="3" onblur="saveScene('${s.id}')">${escapeHtml(s.narration_text)}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Subtitles Text</label>
+                <input type="text" class="form-input" id="subtitle-${s.id}" value="${escapeHtml(s.subtitle_text)}" onblur="saveScene('${s.id}')">
+              </div>
+            </div>
+
+            <div>
+              <div class="form-group">
+                <label class="form-label">Visual Image Prompt / Cue</label>
+                <textarea class="form-textarea" id="visual-prompt-${s.id}" rows="3" onblur="saveScene('${s.id}')">${escapeHtml(s.visual_prompt)}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Scene Image Preview</label>
+                <div style="height: 100px; border-radius: var(--radius-sm); overflow: hidden; background: #030605; border: 1px solid var(--border-subtle);">
+                  ${s.media_asset_url 
+                    ? `<img src="${s.media_asset_url}" style="width: 100%; height: 100%; object-fit: cover;">`
+                    : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:0.85rem;">Generated Scene Image</div>`
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.scrollToScene = function(idx) {
+      document.querySelectorAll('.timeline-node').forEach((n, i) => {
+        n.classList.toggle('active', i === idx);
+      });
+      const card = document.getElementById(`scene-card-${idx}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+
+    window.saveScene = async function(sceneId) {
+      const narrationText = document.getElementById(`narration-${sceneId}`).value;
+      const subtitleText = document.getElementById(`subtitle-${sceneId}`).value;
+      const visualPrompt = document.getElementById(`visual-prompt-${sceneId}`).value;
+
+      try {
+        await window.projectsService.updateScene(sceneId, {
+          narration_text: narrationText,
+          subtitle_text: subtitleText,
+          visual_prompt: visualPrompt
+        });
+      } catch (err) {
+        console.error('Failed to update scene:', err);
+      }
+    };
+
+    // Feature D: Smart Scene Editor - Single Scene Regeneration
+    window.regenerateSingleScene = async function(sceneId, idx) {
+      const btn = event.currentTarget;
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳ Rebuilding...</span>';
+
+      try {
+        await window.projectsService.regenerateScene(sceneId, {});
+        alert(`Scene ${idx + 1} regenerated! Refreshing view.`);
+        await loadProjectData();
+      } catch (err) {
+        alert('Regeneration failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔄 Re-generate Scene</span>';
+      }
+    };
+
+    document.getElementById('render-full-video-btn').addEventListener('click', async () => {
+      try {
+        const jobRes = await window.generationService.startGeneration(projectId);
+        alert('Video rendering job submitted! Polling backend progress...');
+        window.generationService.pollJob(
+          jobRes.job_id,
+          (job) => {
+            document.getElementById('video-render-status').textContent = `Stage: ${job.current_stage}`;
+          },
+          () => {
+            alert('Full video render complete!');
+            loadProjectData();
+          },
+          (err) => {
+            alert('Render failed: ' + err.message);
+          }
+        );
+      } catch (err) {
+        alert('Could not start rendering: ' + err.message);
+      }
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    loadProjectData();
+  </script>
+</body>
+</html>
+

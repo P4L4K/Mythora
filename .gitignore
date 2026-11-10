@@ -1,0 +1,23 @@
+# Operating System & Environment
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment Credentials & Secrets (Never commit secrets)
+.env
+.env.local
+.env.production
+
+# Dependencies
+vendor/
+node_modules/
+
+# Local Storage, SQLite DBs & Scratch Media
+storage/vyral_dev.sqlite
+storage/temp/*
+!storage/temp/.gitkeep
+backend/public/renders/*
+!backend/public/renders/.gitkeep
+
+# Logs
+*.log

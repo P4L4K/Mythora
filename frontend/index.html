@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYRAL STUDIO - Turn Ideas Into Stories | AI Short-Form Video Generator</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Landing page specific flourishes */
+    .landing-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 60px;
+      position: sticky;
+      top: 0;
+      background: rgba(7, 12, 10, 0.7);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .hero-section {
+      text-align: center;
+      padding: 100px 24px 80px;
+      max-width: 1080px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .hero-badge {
+      margin-bottom: 24px;
+    }
+    .hero-title {
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+      margin-bottom: 24px;
+      letter-spacing: -0.03em;
+    }
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      color: var(--text-secondary);
+      max-width: 720px;
+      margin: 0 auto 40px;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+    .demo-showcase {
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      background: rgba(14, 23, 19, 0.8);
+      border: 1px solid var(--border-glass);
+      box-shadow: var(--shadow-glow);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .demo-inner {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      background: #030605;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .feature-card {
+      padding: 32px 28px;
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-glass);
+    }
+    .pricing-card {
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .pricing-card.featured {
+      border-color: var(--emerald-400);
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);
+    }
+    @media (max-width: 768px) {
+      .landing-header { padding: 16px 20px; }
+      .hero-section { padding: 60px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <!-- LANDING NAVIGATION -->
+  <header class="landing-header">
+    <div class="brand-logo">
+      <div class="brand-icon">✨</div>
+      <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+    </div>
+    <nav style="display:flex; gap:28px; align-items:center;">
+      <a href="#features" style="font-weight:500; font-size:0.95rem;">Features</a>
+      <a href="#workflow" style="font-weight:500; font-size:0.95rem;">How it Works</a>
+      <a href="#pricing" style="font-weight:500; font-size:0.95rem;">Pricing</a>
+      <a href="/login.html" class="btn btn-secondary btn-sm">Log In</a>
+      <a href="/register.html" class="btn btn-primary btn-sm">Start Free</a>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-badge">
+      <span class="badge">🌿 AI Video Generation Studio</span>
+    </div>
+    <h1 class="hero-title">
+      Turn Ideas Into <span class="gradient-text">Viral Stories</span> In Seconds.
+    </h1>
+    <p class="hero-subtitle">
+      Transform prompts, written scripts, and article URLs into cinematic vertical videos for TikTok, Instagram Reels, and YouTube Shorts. Powered by AI voice, scene orchestration, and Hook Lab.
+    </p>
+    <div class="hero-actions">
+      <a href="/register.html" class="btn btn-primary btn-lg">Create Your First Video &rarr;</a>
+      <a href="#demo" class="btn btn-secondary btn-lg">Watch Studio Tour</a>
+    </div>
+
+    <!-- PRODUCT DEMONSTRATION PREVIEW -->
+    <div class="demo-showcase" id="demo">
+      <div class="demo-inner">
+        <div style="text-align:center; padding: 40px;">
+          <div style="font-size:3rem; margin-bottom:12px;">🎬</div>
+          <h3 style="margin-bottom:8px;">VYRAL Studio Interactive Engine</h3>
+          <p style="font-size:0.95rem; max-width:440px; margin:0 auto 20px;">
+            Enchanted digital video creation pipeline with 9:16 vertical export, dynamic animated subtitles, and Content DNA brand matching.
+          </p>
+          <a href="/pages/generator.html" class="btn btn-primary btn-sm">Launch Video Generator</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY FEATURES -->
+  <section id="features" style="padding: 80px 24px; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 60px;">
+      <span class="badge badge-violet">Studio Innovations</span>
+      <h2 style="margin-top: 14px;">Designed to Outperform Ordinary Video Generators</h2>
+      <p style="margin-top: 10px;">Tailored tools engineered for creators, marketers, and storytellers.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- Feature A -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon">🧬</div>
+        <h3>Content DNA</h3>
+        <p style="margin-top: 10px; font-size: 0.95rem;">
+          Configure your unique visual aesthetic, narration tone, and subtitle palette once. Future videos automatically align with your brand identity.
+        </p>
+      </div>
+
+      <!-- Feature B -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon">🎣</div>
+        <h3>Hook Lab</h3>
+        <p style="margin-top: 10px; font-size: 0.95rem;">
+          Generate 3 high-converting opening hooks (Curiosity, Story, Educational) before rendering. Maximize watch time and retention.
+        </p>
+      </div>
+
+      <!-- Feature C -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon">📐</div>
+        <h3>Multi-Platform Adaptation</h3>
+        <p style="margin-top: 10px; font-size: 0.95rem;">
+          Adapt single concepts seamlessly for TikTok, Reels, and Shorts with native pacing, optimal duration, and format-specific hooks.
+        </p>
+      </div>
+
+      <!-- Feature D -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon">✂️</div>
+        <h3>Smart Scene Editor</h3>
+        <p style="margin-top: 10px; font-size: 0.95rem;">
+          Edit single scenes, replace images, tweak narration, or re-render just one frame without waiting for the whole video to regenerate.
+        </p>
+      </div>
+
+      <!-- Feature E -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon">🎙️</div>
+        <h3>Studio Narration & Voice</h3>
+        <p style="margin-top: 10px; font-size: 0.95rem;">
+          Natural, studio-grade voices powered by ElevenLabs with emotion modulation, rhythm control, and synced subtitle timestamps.
+        </p>
+      </div>
+
+      <!-- Feature F -->
+      <div class="glass-card feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>FFmpeg Cloud Rendering</h3>
+        <p style="margin-top: 10px; font-size: 0.95rem;">
+          Asynchronous background video rendering supporting transitions, background audio mixing, and 1080p vertical MP4 exports.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="workflow" style="padding: 80px 24px; background: rgba(14, 23, 19, 0.4); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+    <div style="max-width: 1100px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 60px;">
+        <span class="badge">Pipeline</span>
+        <h2 style="margin-top: 14px;">How Ideas Become Viral Videos</h2>
+      </div>
+
+      <div class="grid-4" style="text-align: center;">
+        <div class="glass-card">
+          <div style="font-size: 2rem; color: var(--emerald-400); margin-bottom: 12px; font-weight:800;">01</div>
+          <h4 style="margin-bottom: 8px;">Input Your Concept</h4>
+          <p style="font-size: 0.88rem;">Paste a prompt, rough script, or an article URL you want to adapt.</p>
+        </div>
+        <div class="glass-card">
+          <div style="font-size: 2rem; color: var(--emerald-400); margin-bottom: 12px; font-weight:800;">02</div>
+          <h4 style="margin-bottom: 8px;">Pick Your Hook</h4>
+          <p style="font-size: 0.88rem;">Test 3 AI-crafted opening hooks in the Hook Lab to hook viewers in 3 seconds.</p>
+        </div>
+        <div class="glass-card">
+          <div style="font-size: 2rem; color: var(--emerald-400); margin-bottom: 12px; font-weight:800;">03</div>
+          <h4 style="margin-bottom: 8px;">Scene Orchestration</h4>
+          <p style="font-size: 0.88rem;">AI segments the script, pairs visuals, generates speech, and aligns subtitles.</p>
+        </div>
+        <div class="glass-card">
+          <div style="font-size: 2rem; color: var(--emerald-400); margin-bottom: 12px; font-weight:800;">04</div>
+          <h4 style="margin-bottom: 8px;">Render & Export</h4>
+          <p style="font-size: 0.88rem;">Preview in the scene editor, adjust scenes if desired, and download ready MP4s.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section id="pricing" style="padding: 80px 24px; max-width: 1100px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 60px;">
+      <span class="badge badge-violet">Transparent Credits</span>
+      <h2 style="margin-top: 14px;">Flexible Plans for Every Creator</h2>
+      <p style="margin-top: 10px;">Get started free. 50 bonus credits on registration.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- Free -->
+      <div class="pricing-card">
+        <h3 style="margin-bottom: 4px;">Starter</h3>
+        <p style="font-size: 0.88rem; margin-bottom: 24px;">Explore AI video creation</p>
+        <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 24px;">$0 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ mo</span></div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; font-size: 0.92rem;">
+          <li>✓ 50 Free Welcome Credits</li>
+          <li>✓ 9:16 Vertical Export</li>
+          <li>✓ Hook Lab Access</li>
+          <li>✓ Standard TTS Voice</li>
+        </ul>
+        <a href="/register.html" class="btn btn-secondary" style="margin-top: auto;">Get Started Free</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card featured">
+        <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%);">
+          <span class="badge">Most Popular</span>
+        </div>
+        <h3 style="margin-bottom: 4px;">Creator Pro</h3>
+        <p style="font-size: 0.88rem; margin-bottom: 24px;">For daily short-form creators</p>
+        <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 24px;">$29 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ mo</span></div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; font-size: 0.92rem;">
+          <li>✓ 500 Monthly Credits</li>
+          <li>✓ Unlimited Hook Lab Variations</li>
+          <li>✓ Content DNA Brand Customizer</li>
+          <li>✓ Smart Scene Granular Re-rendering</li>
+          <li>✓ ElevenLabs Studio Voices</li>
+          <li>✓ Fast Background Queue Priority</li>
+        </ul>
+        <a href="/register.html" class="btn btn-primary" style="margin-top: auto;">Upgrade to Pro</a>
+      </div>
+
+      <!-- Studio Elite -->
+      <div class="pricing-card">
+        <h3 style="margin-bottom: 4px;">Studio Elite</h3>
+        <p style="font-size: 0.88rem; margin-bottom: 24px;">For agencies & media teams</p>
+        <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 24px;">$79 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ mo</span></div>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; font-size: 0.92rem;">
+          <li>✓ 2,000 Monthly Credits</li>
+          <li>✓ Multi-Brand Content DNA Profiles</li>
+          <li>✓ 1080p / 4K Video Exports</li>
+          <li>✓ Dedicated Worker Processing</li>
+          <li>✓ Priority Support & API Access</li>
+        </ul>
+        <a href="/register.html" class="btn btn-secondary" style="margin-top: auto;">Contact Sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding: 40px 24px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.88rem;">
+    <p>&copy; 2026 VYRAL STUDIO. Turn Ideas Into Stories. Built with high-performance vanilla JS & PHP architecture.</p>
+  </footer>
+
+  <script src="/assets/js/ui-effects.js"></script>
+</body>
+</html>
+

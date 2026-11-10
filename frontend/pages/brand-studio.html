@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Studio & Content DNA - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item"><span>🏠</span> <span>Dashboard</span></a>
+        <a href="/pages/generator.html" class="nav-item"><span>🪄</span> <span>Create Video</span></a>
+        <a href="/pages/library.html" class="nav-item"><span>📁</span> <span>Project Library</span></a>
+        <a href="/pages/brand-studio.html" class="nav-item active"><span>🧬</span> <span>Content DNA</span></a>
+        <a href="/pages/credits.html" class="nav-item"><span>⚡</span> <span>Credits & Plans</span></a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <h3 style="font-size: 1.15rem; font-weight: 600;">Brand Studio (Content DNA)</h3>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div style="max-width: 860px; margin: 0 auto;">
+          <div style="margin-bottom: 28px;">
+            <span class="badge">Feature A</span>
+            <h1 style="font-size: 2.2rem; margin-top: 8px;">Content DNA Brand System</h1>
+            <p style="margin-top: 6px;">
+              Configure your signature brand identity once. Every video you generate will automatically inherit your colors, narration tone, fonts, and subtitle design.
+            </p>
+          </div>
+
+          <div class="glass-panel" style="padding: 32px;">
+            <form id="brand-dna-form">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="brand-name">Brand / Channel Name</label>
+                  <input type="text" id="brand-name" class="form-input" placeholder="e.g. Apex Stories" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="visual-aesthetic">Signature Visual Aesthetic</label>
+                  <select id="visual-aesthetic" class="form-select">
+                    <option value="Cinematic">Cinematic (Moody, High Contrast)</option>
+                    <option value="Minimalist">Minimalist (Clean, Pastel, Sharp)</option>
+                    <option value="Documentary">Documentary (Authentic, Realistic)</option>
+                    <option value="Anime-inspired">Anime-inspired (Cel-shaded, Vibrant)</option>
+                    <option value="Corporate">Corporate & Professional</option>
+                    <option value="Fantasy">Enchanted Fantasy</option>
+                    <option value="Educational">Educational & Diagrammatic</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="narration-tone">Signature Narration Tone</label>
+                  <select id="narration-tone" class="form-select">
+                    <option value="energetic">Energetic & Fast Paced</option>
+                    <option value="calm">Calm & Mindful</option>
+                    <option value="dramatic">Dramatic & Suspenseful</option>
+                    <option value="educational">Educational & Authoritative</option>
+                    <option value="mysterious">Mysterious & Intriguing</option>
+                    <option value="professional">Professional & Crisp</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="preferred-language">Default Language</label>
+                  <select id="preferred-language" class="form-select">
+                    <option value="en-US">English (US)</option>
+                    <option value="en-GB">English (UK)</option>
+                    <option value="es-ES">Spanish</option>
+                    <option value="fr-FR">French</option>
+                    <option value="de-DE">German</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid-3" style="margin-top: 16px;">
+                <div class="form-group">
+                  <label class="form-label" for="color-primary">Primary Brand Color</label>
+                  <input type="color" id="color-primary" class="form-input" value="#10b981" style="height: 48px; padding: 4px; cursor: pointer;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="color-secondary">Accent Glow Color</label>
+                  <input type="color" id="color-secondary" class="form-input" value="#8b5cf6" style="height: 48px; padding: 4px; cursor: pointer;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="preferred-font">Typography Font</label>
+                  <select id="preferred-font" class="form-select">
+                    <option value="Inter, sans-serif">Inter (Modern & Clean)</option>
+                    <option value="'Montserrat', sans-serif">Montserrat (Bold & Viral)</option>
+                    <option value="'Playfair Display', serif">Playfair (Luxury & Literary)</option>
+                    <option value="'Space Grotesk', sans-serif">Space Grotesk (Tech)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-subtle); margin-top: 24px; padding-top: 24px; display: flex; justify-content: flex-end;">
+                <button type="submit" id="save-brand-btn" class="btn btn-primary">
+                  <span>💾 Save Content DNA</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script>
+    window.authService.requireAuth();
+
+    async function loadBrand() {
+      try {
+        const res = await window.apiClient.get('/brand');
+        if (res.brand) {
+          const b = res.brand;
+          document.getElementById('brand-name').value = b.brand_name || 'My Brand';
+          document.getElementById('visual-aesthetic').value = b.visual_aesthetic || 'Cinematic';
+          document.getElementById('narration-tone').value = b.narration_tone || 'energetic';
+          document.getElementById('preferred-language').value = b.preferred_language || 'en-US';
+          document.getElementById('preferred-font').value = b.preferred_font || 'Inter, sans-serif';
+          if (b.brand_colors) {
+            if (b.brand_colors.primary) document.getElementById('color-primary').value = b.brand_colors.primary;
+            if (b.brand_colors.secondary) document.getElementById('color-secondary').value = b.brand_colors.secondary;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load brand DNA:', err);
+      }
+    }
+
+    document.getElementById('brand-dna-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('save-brand-btn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span>Saving DNA...</span>';
+
+      const payload = {
+        brand_name: document.getElementById('brand-name').value.trim(),
+        visual_aesthetic: document.getElementById('visual-aesthetic').value,
+        narration_tone: document.getElementById('narration-tone').value,
+        preferred_language: document.getElementById('preferred-language').value,
+        preferred_font: document.getElementById('preferred-font').value,
+        brand_colors: {
+          primary: document.getElementById('color-primary').value,
+          secondary: document.getElementById('color-secondary').value
+        }
+      };
+
+      try {
+        await window.apiClient.put('/brand', payload);
+        alert('Content DNA successfully updated! Future videos will inherit these preferences.');
+      } catch (err) {
+        alert('Failed to save brand settings: ' + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span>💾 Save Content DNA</span>';
+      }
+    });
+
+    loadBrand();
+  </script>
+</body>
+</html>
+

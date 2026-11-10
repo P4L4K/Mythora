@@ -1,0 +1,14 @@
+{
+  "name": "vyral-studio/backend",
+  "description": "VYRAL STUDIO - AI Short-Form Video Generation REST API",
+  "type": "project",
+  "require": {
+    "php": ">=8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
+

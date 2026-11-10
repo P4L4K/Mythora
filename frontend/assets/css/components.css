@@ -1,0 +1,306 @@
+/* ==========================================================================
+   VYRAL STUDIO - COMPONENTS & UI ELEMENTS
+   ========================================================================== */
+
+/* 1. SIDEBAR & NAVIGATION */
+.sidebar {
+  width: var(--sidebar-width);
+  background: rgba(9, 15, 12, 0.85);
+  backdrop-filter: blur(24px);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: transform var(--transition-smooth);
+}
+
+.sidebar-header {
+  height: var(--header-height);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--emerald-400), var(--violet-500));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px var(--emerald-glow);
+}
+
+.sidebar-nav {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-item.active {
+  color: var(--emerald-300);
+  background: rgba(16, 185, 129, 0.12);
+  border-left: 3px solid var(--emerald-400);
+  box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.05);
+}
+
+.sidebar-footer {
+  padding: 20px 16px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.credit-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid var(--border-glass);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.credit-amount {
+  font-weight: 700;
+  color: var(--emerald-400);
+}
+
+/* 2. TOP HEADER BAR */
+.main-wrapper {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.top-navbar {
+  height: var(--header-height);
+  background: rgba(7, 12, 10, 0.7);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.user-profile-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--emerald-500), var(--violet-600));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid var(--border-glass);
+}
+
+/* 3. CONTENT CONTAINER */
+.page-content {
+  padding: 32px;
+  flex: 1;
+}
+
+/* 4. HOOK LAB CARD & SELECTOR */
+.hook-card {
+  background: rgba(14, 23, 19, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.hook-card:hover {
+  border-color: var(--border-glass);
+  transform: translateY(-2px);
+}
+
+.hook-card.selected {
+  border-color: var(--emerald-400);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
+.hook-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  color: var(--emerald-300);
+}
+
+/* 5. GENERATION PROGRESS MODAL / PORTAL */
+.generation-portal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 6, 0.88);
+  backdrop-filter: blur(20px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.generation-portal.active {
+  display: flex;
+}
+
+.portal-box {
+  width: 100%;
+  max-width: 580px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 0 50px rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+}
+
+.portal-orb {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--emerald-400) 0%, rgba(139, 92, 246, 0.4) 70%, transparent 100%);
+  box-shadow: 0 0 35px var(--emerald-glow-strong);
+  animation: pulseOrb 2.4s infinite ease-in-out;
+}
+
+@keyframes pulseOrb {
+  0%, 100% { transform: scale(0.92); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 50px rgba(52, 211, 153, 0.8); }
+}
+
+.stage-tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.stage-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.stage-step.active {
+  color: var(--emerald-300);
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid var(--emerald-400);
+}
+
+.stage-step.done {
+  color: var(--text-primary);
+}
+
+/* 6. SMART SCENE CARD */
+.scene-card {
+  background: rgba(14, 23, 19, 0.75);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.scene-card:hover {
+  border-color: var(--border-glass);
+}
+
+.scene-media-preview {
+  position: relative;
+  aspect-ratio: 9/16;
+  max-height: 280px;
+  background: #030605;
+  overflow: hidden;
+}
+
+.scene-media-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scene-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+/* Responsive Hamburger Toggle Button */
+.menu-toggle-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Account - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      z-index: 10;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      padding: 40px;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .bonus-banner {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 0.88rem;
+      color: var(--emerald-300);
+    }
+    .alert-box {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="auth-wrapper">
+    <div class="glass-panel auth-card">
+      <div class="auth-header">
+        <a href="/index.html" class="brand-logo" style="justify-content: center; margin-bottom: 12px;">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </a>
+        <h2>Start Creating</h2>
+        <p style="font-size: 0.92rem; margin-top: 6px;">Turn your imagination into cinematic short-form video</p>
+      </div>
+
+      <div class="bonus-banner">
+        <span>🎁</span>
+        <div><strong>50 Free Credits</strong> granted immediately upon registration!</div>
+      </div>
+
+      <div id="alert-box" class="alert-box alert-error"></div>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label" for="display_name">Creator Name / Studio Handle</label>
+          <input type="text" id="display_name" class="form-input" placeholder="e.g. Luna Creative" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" class="form-input" placeholder="creator@vyralstudio.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password (Minimum 8 characters)</label>
+          <input type="password" id="password" class="form-input" placeholder="••••••••••••" minlength="8" required>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+          <span>Claim 50 Credits & Enter Studio &rarr;</span>
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-secondary);">
+        Already have an account? <a href="/login.html" style="font-weight: 600;">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script>
+    const form = document.getElementById('register-form');
+    const alertBox = document.getElementById('alert-box');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Crafting your studio profile...</span>';
+
+      const displayName = document.getElementById('display_name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        await window.authService.register(email, password, displayName);
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        alertBox.textContent = err.message || 'Registration failed. Please try again.';
+        alertBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Claim 50 Credits & Enter Studio &rarr;</span>';
+      }
+    });
+  </script>
+</body>
+</html>
+

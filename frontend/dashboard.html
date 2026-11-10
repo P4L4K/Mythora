@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Hub - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .welcome-hero {
+      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 32px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(14, 23, 19, 0.85) 60%, rgba(139, 92, 246, 0.12) 100%);
+      border: 1px solid var(--border-glass);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stat-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item active">
+          <span>🏠</span> <span>Dashboard</span>
+        </a>
+        <a href="/pages/generator.html" class="nav-item">
+          <span>🪄</span> <span>Create Video</span>
+        </a>
+        <a href="/pages/library.html" class="nav-item">
+          <span>📁</span> <span>Project Library</span>
+        </a>
+        <a href="/pages/brand-studio.html" class="nav-item">
+          <span>🧬</span> <span>Content DNA</span>
+        </a>
+        <a href="/pages/credits.html" class="nav-item">
+          <span>⚡</span> <span>Credits & Plans</span>
+        </a>
+        <a href="/pages/admin.html" class="nav-item" id="admin-nav" style="display: none;">
+          <span>🛡️</span> <span>Admin Panel</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="credit-pill">
+          <span>Available Credits</span>
+          <span class="credit-amount" id="sidebar-credits">--</span>
+        </div>
+        <button id="logout-btn" class="btn btn-secondary btn-sm" style="width: 100%;">Log Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN BODY -->
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <h3 style="font-size: 1.15rem; font-weight: 600;">Studio Overview</h3>
+        </div>
+
+        <div class="user-profile-menu">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <span id="user-name" style="font-weight: 600; font-size: 0.95rem;">Creator</span>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- WELCOME BANNER -->
+        <div class="welcome-hero">
+          <div>
+            <span class="badge" style="margin-bottom: 12px;">Enchanted Studio Active</span>
+            <h1 style="font-size: 2.2rem; margin-top: 6px;">Welcome to your Studio, <span id="welcome-name" class="gradient-text">Creator</span>.</h1>
+            <p style="margin-top: 8px; max-width: 560px;">Turn your thoughts, URLs, and scripts into high-impact vertical short videos in minutes.</p>
+            <div style="margin-top: 24px;">
+              <a href="/pages/generator.html" class="btn btn-primary">
+                <span>⚡ Create New Video</span>
+              </a>
+            </div>
+          </div>
+          <div style="font-size: 5rem; opacity: 0.8;" class="welcome-decor">🌲✨</div>
+        </div>
+
+        <!-- STATS ROW -->
+        <div class="grid-4" style="margin-bottom: 32px;">
+          <div class="glass-card stat-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem; font-weight: 500;">Total Videos Created</span>
+            <div class="stat-number" id="stat-total-videos">0</div>
+          </div>
+          <div class="glass-card stat-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem; font-weight: 500;">Completed Projects</span>
+            <div class="stat-number" id="stat-completed-projects">0</div>
+          </div>
+          <div class="glass-card stat-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem; font-weight: 500;">Available Credits</span>
+            <div class="stat-number gradient-text-forest" id="stat-credits">50</div>
+          </div>
+          <div class="glass-card stat-card">
+            <span style="color: var(--text-muted); font-size: 0.88rem; font-weight: 500;">Brand DNA Status</span>
+            <div style="font-size: 1.3rem; font-weight: 700; color: var(--emerald-400); margin-top: 8px;" id="stat-brand-status">Configured</div>
+          </div>
+        </div>
+
+        <!-- RECENT PROJECTS SECTION -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3>Recent Projects</h3>
+          <a href="/pages/library.html" style="font-size: 0.9rem; font-weight: 600;">View All &rarr;</a>
+        </div>
+
+        <div id="projects-grid" class="grid-3">
+          <div class="glass-card" style="text-align: center; padding: 48px; grid-column: 1 / -1;">
+            <div style="font-size: 2.5rem; margin-bottom: 12px;">🌿</div>
+            <h4>No video projects created yet</h4>
+            <p style="font-size: 0.9rem; margin-top: 6px; margin-bottom: 20px;">Begin by turning your first idea into a story.</p>
+            <a href="/pages/generator.html" class="btn btn-primary btn-sm">Start Your First Video</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script src="/services/projects.js"></script>
+  <script>
+    // Enforce Authentication
+    window.authService.requireAuth();
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      window.authService.logout();
+    });
+
+    // Populate user details & projects
+    async function loadDashboard() {
+      try {
+        const profile = await window.authService.getProfile();
+        const user = profile.user || {};
+        
+        const displayName = user.display_name || user.email?.split('@')[0] || 'Creator';
+        document.getElementById('user-name').textContent = displayName;
+        document.getElementById('welcome-name').textContent = displayName;
+        document.getElementById('user-avatar').textContent = displayName.charAt(0).toUpperCase();
+
+        const credits = user.credits_balance ?? 50;
+        document.getElementById('stat-credits').textContent = credits;
+        document.getElementById('sidebar-credits').textContent = `${credits} pts`;
+
+        if (user.role === 'admin') {
+          document.getElementById('admin-nav').style.display = 'flex';
+        }
+
+        // Fetch recent projects
+        const res = await window.projectsService.listProjects();
+        const projects = res.projects || [];
+        
+        document.getElementById('stat-total-videos').textContent = projects.length;
+        document.getElementById('stat-completed-projects').textContent = projects.filter(p => p.status === 'ready').length;
+
+        if (projects.length > 0) {
+          const grid = document.getElementById('projects-grid');
+          grid.innerHTML = projects.slice(0, 6).map(p => `
+            <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                  <span class="badge ${p.status === 'ready' ? '' : 'badge-violet'}">${p.status}</span>
+                  <span style="font-size: 0.78rem; color: var(--text-muted);">${new Date(p.created_at).toLocaleDateString()}</span>
+                </div>
+                <h4 style="margin-bottom: 8px;">${escapeHtml(p.title || 'Untitled Video')}</h4>
+                <p style="font-size: 0.85rem; line-height: 1.4; margin-bottom: 16px;">${escapeHtml(p.source_content?.slice(0, 90))}...</p>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 14px;">
+                <a href="/pages/editor.html?project_id=${p.id}" class="btn btn-secondary btn-sm" style="flex: 1;">Edit Scenes</a>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
+

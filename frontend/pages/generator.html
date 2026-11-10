@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Generator & Hook Lab - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .input-mode-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: rgba(8, 14, 11, 0.6);
+      padding: 6px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      width: fit-content;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all var(--transition-fast);
+    }
+    .tab-btn.active {
+      background: var(--bg-surface-hover);
+      color: var(--emerald-300);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+    .hook-selection-section {
+      display: none;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-subtle);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item"><span>🏠</span> <span>Dashboard</span></a>
+        <a href="/pages/generator.html" class="nav-item active"><span>🪄</span> <span>Create Video</span></a>
+        <a href="/pages/library.html" class="nav-item"><span>📁</span> <span>Project Library</span></a>
+        <a href="/pages/brand-studio.html" class="nav-item"><span>🧬</span> <span>Content DNA</span></a>
+        <a href="/pages/credits.html" class="nav-item"><span>⚡</span> <span>Credits & Plans</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="credit-pill">
+          <span>Available Credits</span>
+          <span class="credit-amount" id="sidebar-credits">--</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <h3 style="font-size: 1.15rem; font-weight: 600;">AI Video Studio Generator</h3>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div style="max-width: 980px; margin: 0 auto;">
+          <div style="margin-bottom: 28px;">
+            <span class="badge">Creation Studio</span>
+            <h1 style="font-size: 2.2rem; margin-top: 8px;">Transform Your Concept Into Video</h1>
+            <p style="margin-top: 6px;">Choose your input format, refine your opening hook in the Hook Lab, and let the AI generate a complete multi-scene vertical video.</p>
+          </div>
+
+          <!-- INPUT METHOD TABS -->
+          <div class="input-mode-tabs">
+            <button class="tab-btn active" data-mode="prompt">💡 Text Prompt</button>
+            <button class="tab-btn" data-mode="script">📝 Written Script</button>
+            <button class="tab-btn" data-mode="url">🔗 Article URL</button>
+          </div>
+
+          <!-- GENERATOR FORM -->
+          <div class="glass-panel" style="padding: 32px;">
+            <form id="generator-form">
+              <div class="form-group">
+                <label class="form-label" for="project-title">Project Title</label>
+                <input type="text" id="project-title" class="form-input" placeholder="e.g. 3 Secrets of Deep Focus" required>
+              </div>
+
+              <!-- DYNAMIC INPUT AREA -->
+              <div class="form-group" id="input-field-container">
+                <label class="form-label" id="input-label" for="source-content">Enter Your Idea / Text Prompt</label>
+                <textarea id="source-content" class="form-textarea" rows="4" placeholder="Describe the story, facts, or concept you want to present in this video..." required></textarea>
+              </div>
+
+              <!-- SETTINGS GRID -->
+              <div class="grid-3" style="margin-top: 24px; margin-bottom: 24px;">
+                <div class="form-group">
+                  <label class="form-label" for="target-platform">Target Platform</label>
+                  <select id="target-platform" class="form-select">
+                    <option value="tiktok" selected>TikTok (High Pacing / Viral)</option>
+                    <option value="instagram_reels">Instagram Reels (Aesthetic)</option>
+                    <option value="youtube_shorts">YouTube Shorts (Retention Driven)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="aspect-ratio">Aspect Ratio</label>
+                  <select id="aspect-ratio" class="form-select">
+                    <option value="9:16" selected>9:16 Vertical (Reels/Shorts/TikTok)</option>
+                    <option value="16:9">16:9 Landscape (YouTube)</option>
+                    <option value="1:1">1:1 Square (Feed)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="video-duration">Target Duration</label>
+                  <select id="video-duration" class="form-select">
+                    <option value="20">~20s (Fast Hook & Takeaway)</option>
+                    <option value="30" selected>~30s (Balanced Short)</option>
+                    <option value="60">~60s (In-depth Story)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid-3" style="margin-bottom: 24px;">
+                <div class="form-group">
+                  <label class="form-label" for="visual-style">Visual Aesthetic</label>
+                  <select id="visual-style" class="form-select">
+                    <option value="Cinematic" selected>Cinematic (Dramatic Lighting)</option>
+                    <option value="Minimalist">Minimalist (Clean & Elegant)</option>
+                    <option value="Documentary">Documentary (Realistic Archival)</option>
+                    <option value="Anime-inspired">Anime-inspired (Vibrant Cel-shaded)</option>
+                    <option value="Fantasy">Enchanted Fantasy</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="voice-id">Voice Narration</label>
+                  <select id="voice-id" class="form-select">
+                    <option value="rachel" selected>Rachel (Engaging & Clear)</option>
+                    <option value="antoni">Antoni (Deep & Dramatic)</option>
+                    <option value="bella">Bella (Enthusiastic & Friendly)</option>
+                    <option value="adam">Adam (Authoritative & Crisp)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="bg-music">Background Music</label>
+                  <select id="bg-music" class="form-select">
+                    <option value="mystic_ambient" selected>Mystic Ambient (Subtle)</option>
+                    <option value="cyber_lofi">Lofi Beats (Chill)</option>
+                    <option value="cinematic_pulse">Cinematic Pulse (Suspense)</option>
+                    <option value="none">No Background Music</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- HOOK LAB TRIGGER BUTTON -->
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <button type="button" id="generate-hooks-btn" class="btn btn-secondary">
+                  <span>🎣 Generate Hooks (Hook Lab)</span>
+                </button>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Recommended: Preview opening variations before generating complete scenes</span>
+              </div>
+
+              <!-- FEATURE B: HOOK LAB SELECTION SECTION -->
+              <div id="hook-lab-section" class="hook-selection-section">
+                <div style="margin-bottom: 16px;">
+                  <span class="badge badge-violet">Hook Lab</span>
+                  <h3 style="margin-top: 6px;">Select Your Opening Hook Variation</h3>
+                  <p style="font-size: 0.88rem;">The opening 3 seconds decide whether viewers keep scrolling or stay glued. Select the hook that best fits your audience:</p>
+                </div>
+
+                <div id="hook-cards-container" class="grid-3" style="margin-bottom: 24px;">
+                  <!-- Dynamic Hook Cards Injected Here -->
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 24px; margin-top: 32px; display: flex; justify-content: flex-end;">
+                <button type="submit" id="submit-generation-btn" class="btn btn-primary btn-lg">
+                  <span>✨ Generate Full Video Project (10 Credits)</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- GENERATION MODAL / PORTAL -->
+  <div class="generation-portal" id="generation-portal">
+    <div class="portal-box">
+      <div class="portal-orb"></div>
+      <h3 style="margin-bottom: 8px;">Synthesizing Video Story</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px;">Our AI pipeline and FFmpeg worker are rendering your video.</p>
+
+      <div class="stage-tracker" id="stage-tracker">
+        <div class="stage-step" id="stage-script"><span>📜</span> <span>1. Generating Script & Hook</span></div>
+        <div class="stage-step" id="stage-scenes"><span>🎬</span> <span>2. Segmenting Scenes & Visual Prompts</span></div>
+        <div class="stage-step" id="stage-visuals"><span>🎨</span> <span>3. Generating & Pairing Visual Assets</span></div>
+        <div class="stage-step" id="stage-audio"><span>🎙️</span> <span>4. Generating Audio Narration (TTS)</span></div>
+        <div class="stage-step" id="stage-render"><span>⚡</span> <span>5. FFmpeg Composing, Transitions & Subtitles</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script src="/services/projects.js"></script>
+  <script src="/services/generation.js"></script>
+  <script>
+    window.authService.requireAuth();
+
+    // Input mode tab handling
+    let currentMode = 'prompt';
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const inputLabel = document.getElementById('input-label');
+    const sourceContent = document.getElementById('source-content');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+
+        if (currentMode === 'prompt') {
+          inputLabel.textContent = 'Enter Your Idea / Text Prompt';
+          sourceContent.placeholder = 'Describe the story, facts, or concept you want to present in this video...';
+        } else if (currentMode === 'script') {
+          inputLabel.textContent = 'Paste Your Full Written Script';
+          sourceContent.placeholder = 'Paste your pre-written script here. AI will segment it into scenes and sync narration.';
+        } else if (currentMode === 'url') {
+          inputLabel.textContent = 'Article / Webpage URL';
+          sourceContent.placeholder = 'https://example.com/blog/how-to-build-habits';
+        }
+      });
+    });
+
+    // Content DNA Integration: Pre-fill user brand settings if configured
+    async function loadBrandSettings() {
+      try {
+        const res = await window.apiClient.get('/brand');
+        if (res.brand) {
+          if (res.brand.visual_aesthetic) document.getElementById('visual-style').value = res.brand.visual_aesthetic;
+          if (res.brand.preferred_language) { /* optional language selector */ }
+        }
+      } catch (err) {
+        console.warn('Could not load brand preset:', err);
+      }
+    }
+    loadBrandSettings();
+
+    // Hook Lab Handler
+    let selectedHookText = null;
+    const generateHooksBtn = document.getElementById('generate-hooks-btn');
+    const hookLabSection = document.getElementById('hook-lab-section');
+    const hookCardsContainer = document.getElementById('hook-cards-container');
+
+    generateHooksBtn.addEventListener('click', async () => {
+      const prompt = sourceContent.value.trim();
+      if (!prompt) {
+        alert('Please enter your prompt or topic first.');
+        sourceContent.focus();
+        return;
+      }
+
+      generateHooksBtn.disabled = true;
+      generateHooksBtn.innerHTML = '<span>⏳ Synthesizing Hook Variations...</span>';
+
+      try {
+        const platform = document.getElementById('target-platform').value;
+        const res = await window.generationService.generateHooks(prompt, platform);
+        const hooks = res.hooks || [];
+
+        hookCardsContainer.innerHTML = hooks.map((hook, idx) => `
+          <div class="hook-card ${idx === 0 ? 'selected' : ''}" data-hook="${escapeHtml(hook.text)}">
+            <div class="hook-tag">${escapeHtml(hook.type || 'Variation')}</div>
+            <p style="font-size: 0.92rem; color: var(--text-primary); font-weight: 500;">"${escapeHtml(hook.text)}"</p>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px;">Psychology: ${escapeHtml(hook.angle || 'High curiosity')}</div>
+          </div>
+        `).join('');
+
+        selectedHookText = hooks[0]?.text || null;
+        hookLabSection.style.display = 'block';
+
+        // Select card click event
+        document.querySelectorAll('.hook-card').forEach(card => {
+          card.addEventListener('click', () => {
+            document.querySelectorAll('.hook-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedHookText = card.dataset.hook;
+          });
+        });
+      } catch (err) {
+        alert('Failed to generate hooks: ' + err.message);
+      } finally {
+        generateHooksBtn.disabled = false;
+        generateHooksBtn.innerHTML = '<span>🎣 Generate Hooks (Hook Lab)</span>';
+      }
+    });
+
+    // Form submission & Full generation pipeline
+    const generatorForm = document.getElementById('generator-form');
+    const generationPortal = document.getElementById('generation-portal');
+
+    generatorForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('project-title').value.trim();
+      const content = sourceContent.value.trim();
+      const targetPlatform = document.getElementById('target-platform').value;
+      const aspectRatio = document.getElementById('aspect-ratio').value;
+      const duration = parseInt(document.getElementById('video-duration').value);
+      const visualStyle = document.getElementById('visual-style').value;
+      const voiceId = document.getElementById('voice-id').value;
+      const bgMusic = document.getElementById('bg-music').value;
+
+      // Show Generation Modal Portal
+      generationPortal.classList.add('active');
+      updateStage('stage-script', 'active');
+
+      try {
+        // Step 1: Create project entry
+        const projectRes = await window.projectsService.createProject({
+          title,
+          input_type: currentMode,
+          source_content: content,
+          target_platform: targetPlatform,
+          aspect_ratio: aspectRatio,
+          target_duration_sec: duration,
+          visual_style: visualStyle,
+          voice_id: voiceId,
+          background_music: bgMusic,
+          selected_hook: selectedHookText
+        });
+
+        const projectId = projectRes.project.id;
+
+        // Step 2: Queue video generation
+        const jobRes = await window.generationService.startGeneration(projectId);
+        const jobId = jobRes.job_id;
+
+        // Step 3: Poll actual backend stage progression
+        window.generationService.pollJob(
+          jobId,
+          (job) => {
+            handleStageUpdate(job.current_stage);
+          },
+          (completedJob) => {
+            // Success -> Navigate to Smart Scene Editor
+            window.location.href = `/pages/editor.html?project_id=${projectId}&ready=true`;
+          },
+          (err) => {
+            alert('Generation error: ' + err.message);
+            generationPortal.classList.remove('active');
+          }
+        );
+      } catch (err) {
+        alert('Could not start generation: ' + err.message);
+        generationPortal.classList.remove('active');
+      }
+    });
+
+    function handleStageUpdate(stage) {
+      if (stage === 'generating_script') {
+        updateStage('stage-script', 'active');
+      } else if (stage === 'generating_visuals') {
+        updateStage('stage-script', 'done');
+        updateStage('stage-scenes', 'done');
+        updateStage('stage-visuals', 'active');
+      } else if (stage === 'synthesizing_audio') {
+        updateStage('stage-visuals', 'done');
+        updateStage('stage-audio', 'active');
+      } else if (stage === 'rendering_ffmpeg' || stage === 'building_subtitles') {
+        updateStage('stage-audio', 'done');
+        updateStage('stage-render', 'active');
+      } else if (stage === 'completed') {
+        updateStage('stage-render', 'done');
+      }
+    }
+
+    function updateStage(elementId, status) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.classList.remove('active', 'done');
+      el.classList.add(status);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credits & Subscriptions - VYRAL STUDIO</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="brand-icon">✨</div>
+          <span>VYRAL <span style="color:var(--emerald-400)">STUDIO</span></span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item"><span>🏠</span> <span>Dashboard</span></a>
+        <a href="/pages/generator.html" class="nav-item"><span>🪄</span> <span>Create Video</span></a>
+        <a href="/pages/library.html" class="nav-item"><span>📁</span> <span>Project Library</span></a>
+        <a href="/pages/brand-studio.html" class="nav-item"><span>🧬</span> <span>Content DNA</span></a>
+        <a href="/pages/credits.html" class="nav-item active"><span>⚡</span> <span>Credits & Plans</span></a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle-btn" id="menu-toggle">☰</button>
+          <h3 style="font-size: 1.15rem; font-weight: 600;">Credits & Consumption Ledger</h3>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div style="max-width: 900px; margin: 0 auto;">
+          <!-- BALANCE HERO CARD -->
+          <div class="glass-panel" style="padding: 32px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <div>
+              <span class="badge">Active Balance</span>
+              <div style="font-size: 3.2rem; font-weight: 800; margin-top: 8px;" class="gradient-text-forest" id="balance-display">--</div>
+              <p style="font-size: 0.9rem; margin-top: 4px;">Credits available for video generations and scene re-renders.</p>
+            </div>
+            <div>
+              <a href="#plans" class="btn btn-primary">Top Up Credits</a>
+            </div>
+          </div>
+
+          <!-- COST BREAKDOWN -->
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 32px;">
+            <h4 style="margin-bottom: 12px;">Standard Generation Costs</h4>
+            <div class="grid-3" style="font-size: 0.9rem;">
+              <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm);">
+                <strong>Full Video (30s)</strong>: 10 Credits
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm);">
+                <strong>Hook Lab (3 Hooks)</strong>: 2 Credits
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm);">
+                <strong>Single Scene Regen</strong>: 2 Credits
+              </div>
+            </div>
+          </div>
+
+          <!-- RECENT TRANSACTIONS LEDGER -->
+          <div class="glass-panel" style="padding: 24px;">
+            <h4 style="margin-bottom: 16px;">Credit History & Transactions</h4>
+            <div class="table-responsive">
+              <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted);">
+                    <th style="padding: 10px;">Date</th>
+                    <th style="padding: 10px;">Type</th>
+                    <th style="padding: 10px;">Description</th>
+                    <th style="padding: 10px; text-align: right;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="transactions-body">
+                  <tr>
+                    <td colspan="4" style="padding: 20px; text-align: center; color: var(--text-muted);">Loading ledger history...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/ui-effects.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/services/api.js"></script>
+  <script src="/services/auth.js"></script>
+  <script>
+    window.authService.requireAuth();
+
+    async function loadCredits() {
+      try {
+        const res = await window.apiClient.get('/credits');
+        document.getElementById('balance-display').textContent = `${res.balance ?? 50} pts`;
+
+        const history = res.history || [];
+        const tbody = document.getElementById('transactions-body');
+
+        if (history.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="padding: 24px; text-align: center;">No transactions found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = history.map(tx => `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <td style="padding: 12px 10px;">${new Date(tx.created_at).toLocaleDateString()}</td>
+            <td style="padding: 12px 10px;"><span class="badge ${tx.amount > 0 ? '' : 'badge-violet'}">${tx.transaction_type}</span></td>
+            <td style="padding: 12px 10px;">${escapeHtml(tx.description)}</td>
+            <td style="padding: 12px 10px; text-align: right; font-weight: 700; color: ${tx.amount > 0 ? 'var(--emerald-400)' : '#f87171'};">
+              ${tx.amount > 0 ? '+' : ''}${tx.amount}
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load credits:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    loadCredits();
+  </script>
+</body>
+</html>
+
