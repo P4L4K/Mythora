@@ -1,138 +1,83 @@
 # VYRAL STUDIO
-> **Turn Ideas Into Stories.**
-> *AI-Powered Short-Form Video Generation SaaS Studio*
 
----
+Turn Ideas Into Stories.
 
-## 🌟 Overview
+VYRAL STUDIO is a lightweight SaaS tool for turning prompts, scripts, and article URLs into vertical short-form videos for TikTok, Instagram Reels, and YouTube Shorts.
 
-**VYRAL STUDIO** is a production-grade SaaS platform designed to transform rough text prompts, written scripts, and article URLs into cinematic vertical videos for **TikTok**, **Instagram Reels**, and **YouTube Shorts**.
+## What's Inside
 
-Built with an **Enchanted Digital Forest** design system (obsidian charcoal, bioluminescent emerald, arcane violet, and hardware-accelerated ambient firefly particles), the studio prioritizes human-like storytelling and creator agency over generic AI dashboards.
+- **Hook Lab**: Generates 3 different opening hooks (Curiosity, Story, Educational) before full video rendering.
+- **Content DNA**: Set your brand colors, voice tone, and visual styles once; they apply across all future projects.
+- **Smart Scene Editor**: Video is split into distinct scenes. You can edit text, swap image prompts, and regenerate single scenes without rebuilding the entire video.
+- **Multi-Format Output**: Default 9:16 vertical video with animated subtitles, with options for 16:9 and 1:1.
+- **Built-in Credit System**: Tracks usage for generation and single-scene regenerations.
 
----
+## Tech Stack
 
-## 🚀 Key Differentiating Features
+- **Frontend**: Plain HTML5, CSS3, and Vanilla JavaScript (ES6+). No frameworks.
+- **Backend**: PHP 8.2+ REST API with PDO and JWT authentication.
+- **Video Engine**: FFmpeg for video rendering, text overlay, and audio composition.
+- **Database & Auth**: Supabase (PostgreSQL + Auth + Storage).
 
-- **Feature A: Content DNA**: A persistent brand identity system saving signature visual aesthetics (Cinematic, Minimalist, Documentary, Anime), narration tones, and custom subtitle palettes. Automatically injected into all future prompts and renders.
-- **Feature B: Hook Lab**: Generates 3 distinct psychological opening variations (*Curiosity-Driven*, *Story-Driven*, and *Educational/Provocative*) before rendering full videos to ensure maximum viewer retention in the first 3 seconds.
-- **Feature C: Multi-Platform Adaptation**: Tailors script pacing, aspect ratio (9:16 Vertical, 16:9 Landscape, 1:1 Square), and duration natively per platform.
-- **Feature D: Smart Scene Editor**: Granular scene-level timeline. Edit narration scripts, modify subtitle timestamps, change visual image prompts, and re-generate individual scenes in isolation without having to re-render the entire video.
-- **Credit & Ledger System**: Granular credit tracking with transparent consumption logging.
+## Project Structure
 
----
-
-## 🛠️ Technology Stack
-
-- **Frontend**: Vanilla ES6+ JavaScript, HTML5, CSS3 Custom Properties, Canvas Particle Engine. No bulky frameworks. Hosted on **Netlify**.
-- **Backend**: Modular **PHP 8.2+** REST API architecture with prepared PDO statements, JWT verification, and service connectors. Hosted on **Render** (Dockerized).
-- **Database & Auth**: **Supabase** PostgreSQL (10 normalized tables with full Row-Level Security) and Supabase Auth.
-- **AI Engine**: Google Gemini API integration (structured JSON schema mode) with intelligent fallback generator for standalone development.
-- **Video Processing**: **FFmpeg** background rendering pipeline supporting transitions, vertical composition (1080x1920), synthetic visual canvas, and audio mixing.
-
----
-
-## 📁 Repository Directory Structure
-
-```text
-VYRAL-STUDIO/
-├── frontend/                     # Vanilla JS Client (Netlify)
-│   ├── index.html                # Landing page (hero, demo, features, pricing)
-│   ├── login.html                # Supabase auth login
-│   ├── register.html             # User registration (50 free credits grant)
-│   ├── dashboard.html            # Main studio dashboard
-│   ├── netlify.toml              # Netlify build and API proxy config
-│   ├── pages/
-│   │   ├── generator.html        # Video Generator & Hook Lab
-│   │   ├── editor.html           # Smart Scene Editor (timeline & cards)
-│   │   ├── library.html          # Project archive & MP4 downloads
-│   │   ├── brand-studio.html     # Content DNA configuration
-│   │   ├── credits.html          # Credit ledger & top-up
-│   │   └── admin.html            # Admin telemetry & worker job queue
-│   ├── assets/
-│   │   ├── css/                  # main.css, components.css, responsive.css
-│   │   └── js/                   # config.js, ui-effects.js (fireflies)
-│   └── services/                 # api.js, auth.js, projects.js, generation.js
-│
-├── backend/                      # PHP 8.2 REST API (Render / Docker)
-│   ├── public/
-│   │   ├── index.php             # Unified REST gateway & router
-│   │   └── .htaccess
-│   ├── src/
-│   │   ├── Config/Config.php
-│   │   ├── Database/Database.php # PDO SQLite / PostgreSQL adapter
-│   │   ├── Middleware/           # AuthMiddleware.php
-│   │   └── Services/             # GeminiService.php, VideoRendererService.php
-│   ├── Dockerfile
-│   └── composer.json
-│
-├── worker/                       # Asynchronous Rendering Worker
-│   └── worker.php                # CLI daemon for queued jobs
-│
-├── supabase/                     # Database Migrations & Policies
-│   ├── migrations/
-│   │   ├── 001_initial_schema.sql# Complete 10-table schema
-│   │   └── 002_rls_policies.sql  # Row Level Security & Triggers
+```
+├── frontend/             # Static UI (deploy to Netlify)
+│   ├── index.html        # Landing page
+│   ├── dashboard.html    # User project overview
+│   ├── pages/            # generator, editor, library, brand-studio, credits, admin
+│   ├── assets/           # CSS, JS, ambient firefly effects
+│   └── services/         # api.js, auth.js, projects.js, generation.js
+├── backend/              # PHP REST API (deploy to Render via Docker)
+│   ├── public/index.php  # API router & controllers
+│   ├── src/              # Config, DB PDO, Middleware, Services
+│   └── Dockerfile        # Container with PHP 8.2, Apache, and FFmpeg
+├── worker/               # Background rendering worker (worker.php)
+├── supabase/             # PostgreSQL migrations & RLS policies
+│   ├── migrations/       # Schema and security rules
 │   └── seed.sql
-│
-├── docs/                         # Documentation
-│   └── deployment.md             # Complete Netlify + Render + Supabase guide
-├── .env.example
-└── README.md
+└── docs/deployment.md    # Deployment steps
 ```
 
----
+## Running Locally
 
-## 🏃 Local Development Setup
+### 1. Database Setup (Supabase)
+1. Go to your Supabase project's **SQL Editor**.
+2. Run `supabase/migrations/001_initial_schema.sql`.
+3. Run `supabase/migrations/002_rls_policies.sql`.
+4. Create a public storage bucket named `vyral-media`.
 
-### 1. Frontend
-Serve the `frontend/` directory with any static web server:
+### 2. Backend Setup
+1. Copy environment template:
+   ```bash
+   cp .env.example .env
+   ```
+2. Fill in your database and API credentials in `.env`.
+3. Start the PHP server:
+   ```bash
+   cd backend/public
+   php -S localhost:8000
+   ```
+   *(If testing without Postgres, the app falls back to a local SQLite file in `storage/` automatically).*
 
-**Option A (Using PHP):**
+### 3. Frontend Setup
+Run any static file server inside `frontend/`:
 ```bash
 cd frontend
 php -S localhost:3000
 ```
-
-**Option B (Using Node / npx):**
-```bash
-npx serve frontend -p 3000
-```
-
-**Option C (Using VS Code Live Server):**
-Right-click `frontend/index.html` and select **"Open with Live Server"**.
-
 Open `http://localhost:3000` in your browser.
 
-### 2. Backend API
-Run the PHP backend using the built-in server or Docker:
-```bash
-cd backend/public
-php -S localhost:8000
-```
-Or with Docker:
-```bash
-docker build -t vyral-backend backend/
-docker run -p 8000:80 vyral-backend
-```
-
-### 3. Background Worker
-To run the background queue listener:
+### 4. Background Worker (Optional)
+If you want to run rendering jobs asynchronously via the CLI queue:
 ```bash
 php worker/worker.php
 ```
 
----
+## Production Deployment Summary
 
-## 🧪 Testing and Verification
+- **Frontend**: Netlify (Root directory: `frontend/`, publish directory: `frontend/`). Proxy routing is pre-configured in `frontend/netlify.toml`.
+- **Backend**: Render Web Service using `backend/Dockerfile` (includes PHP 8.2 + FFmpeg).
+- **Database**: Supabase.
 
-- **Authentication**: Test sign up at `/register.html`, log in at `/login.html`, session persistence in `localStorage`, and auto-redirection on unauthorized endpoints.
-- **Hook Lab**: Test generating 3 hook variations from a raw text prompt in the generator.
-- **Video Pipeline**: Submit a project to trigger scene segmentation, prompt building, and FFmpeg video generation with live stage progress updates.
-- **Smart Scene Editor**: Navigate to `/pages/editor.html`, modify scene texts, and trigger single-scene regeneration.
-
----
-
-## 📄 License
-MIT License. Built for creators and developers by VYRAL STUDIO.
-
+Detailed instructions are in [`docs/deployment.md`](docs/deployment.md).
