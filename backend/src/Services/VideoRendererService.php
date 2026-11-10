@@ -58,11 +58,25 @@ class VideoRendererService {
         $titleEscaped = escapeshellarg($project['title'] ?? 'MYTHORA');
         $subtitleEscaped = escapeshellarg("Turn Ideas Into Stories | " . ($project['visual_style'] ?? 'Cinematic'));
 
-        // Build FFmpeg command with animated color gradient, title overlay, and test audio tone
-        $cmd = "{$this->ffmpegPath} -y -f lavfi -i testsrc=size={$width}x{$height}:rate=30 -f lavfi -i sine=frequency=440:duration={$duration} "
-             . "-t {$duration} -pix_fmt yuv420p "
-             . "-vf \"drawtext=text={$titleEscaped}:fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2-60,drawtext=text={$subtitleEscaped}:fontcolor=0x10b981:fontsize=28:x=(w-text_w)/2:y=(h-text_h)/2+40\" "
-             . "-c:v libx264 -c:a aac -shortest " . escapeshellarg($outputMp4) . " 2>&1";
+        // Generate high quality voice narration via free Edge/Google TTS or ElevenLabs if key exists
+        $tts = new TTSService();
+        $sceneAudioFiles = [];
+        $fullNarration = implode(' ', array_map(fn($s) => $s['narration_text'], $scenes));
+        $audioFile = $tempDir . '/narration.mp3';
+        $hasAudio = $tts->generateSpeech($fullNarration, $audioFile, $project['voice_id'] ?? 'rachel');
+
+        // Build FFmpeg command with either generated speech audio or synthetic test tone
+        if ($hasAudio && file_exists($audioFile) && filesize($audioFile) > 1000) {
+            $cmd = "{$this->ffmpegPath} -y -f lavfi -i testsrc=size={$width}x{$height}:rate=30 -i " . escapeshellarg($audioFile)
+                 . " -t {$duration} -pix_fmt yuv420p "
+                 . "-vf \"drawtext=text={$titleEscaped}:fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2-60,drawtext=text={$subtitleEscaped}:fontcolor=0x10b981:fontsize=28:x=(w-text_w)/2:y=(h-text_h)/2+40\" "
+                 . "-c:v libx264 -c:a aac -shortest " . escapeshellarg($outputMp4) . " 2>&1";
+        } else {
+            $cmd = "{$this->ffmpegPath} -y -f lavfi -i testsrc=size={$width}x{$height}:rate=30 -f lavfi -i sine=frequency=440:duration={$duration} "
+                 . "-t {$duration} -pix_fmt yuv420p "
+                 . "-vf \"drawtext=text={$titleEscaped}:fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2-60,drawtext=text={$subtitleEscaped}:fontcolor=0x10b981:fontsize=28:x=(w-text_w)/2:y=(h-text_h)/2+40\" "
+                 . "-c:v libx264 -c:a aac -shortest " . escapeshellarg($outputMp4) . " 2>&1";
+        }
 
         exec($cmd, $outputLines, $returnCode);
 

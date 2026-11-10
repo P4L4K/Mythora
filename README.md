@@ -20,7 +20,7 @@ MYTHORA is an AI-powered content studio that converts text prompts, written scri
 - **Background Processing**: Separate **Render Background Worker** running PHP CLI and FFmpeg.
 - **Database & Auth**: **Supabase** (PostgreSQL with Row-Level Security, Supabase Auth).
 - **Permanent File Storage**: **Supabase Storage** (`mythora-media`). Render filesystem is used only as temporary scratch space.
-- **AI Integrations**: Google Gemini API (Free tier for script generation & Hook Lab) and 100% Free Google Neural TTS / Edge-TTS engine (no subscription or credit card needed). Supports optional ElevenLabs API if configured.
+- **AI Integrations**: Google Gemini API (scripts, Hook Lab, scene segmentation) & ElevenLabs API (text-to-speech narration).
 - **Video Processing**: FFmpeg 6/7.
 
 ## Project Structure
