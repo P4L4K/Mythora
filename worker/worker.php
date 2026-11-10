@@ -17,7 +17,7 @@ $pdo = Database::getConnection();
 $renderer = new VideoRendererService();
 
 $pollInterval = (int)Config::get('WORKER_POLL_INTERVAL_SEC', 3);
-echo "🌿 VYRAL STUDIO Worker daemon started. Polling every {$pollInterval}s...\n";
+echo "🌿 MYTHORA Render Worker daemon started. Polling PostgreSQL generation_jobs queue every {$pollInterval}s...\n";
 
 while (true) {
     try {

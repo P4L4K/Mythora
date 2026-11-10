@@ -70,7 +70,7 @@ try {
         // Create JWT-like session token
         $header = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
         $payload = base64_encode(json_encode(['id' => $userId, 'sub' => $userId, 'email' => $email, 'exp' => time() + 86400 * 7]));
-        $token = "{$header}.{$payload}.vyral_sig";
+        $token = "{$header}.{$payload}.mythora_sig";
 
         jsonResponse([
             'token' => $token,
@@ -96,7 +96,7 @@ try {
 
         $header = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
         $payload = base64_encode(json_encode(['id' => $user['id'], 'sub' => $user['id'], 'email' => $user['email'], 'exp' => time() + 86400 * 7]));
-        $token = "{$header}.{$payload}.vyral_sig";
+        $token = "{$header}.{$payload}.mythora_sig";
 
         jsonResponse(['token' => $token, 'user' => $user]);
     }

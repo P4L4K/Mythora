@@ -1,78 +1,81 @@
-# Deployment Guide
+# MYTHORA - Deployment Guide
 
-How to deploy VYRAL STUDIO across Supabase, Render, and Netlify.
+This guide details how to deploy MYTHORA across **Render** (Frontend Static Site, PHP Web Service, and Background Worker) and **Supabase** (Database, Auth, and Permanent Storage).
 
 ---
 
-## 1. Supabase (Database & Auth)
+## 1. Supabase Setup (Database, Auth & Storage)
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Open the **SQL Editor** in your Supabase dashboard.
-3. Run `supabase/migrations/001_initial_schema.sql` (creates the 10 tables, indexes, and constraints).
-4. Run `supabase/migrations/002_rls_policies.sql` (enables Row Level Security and the new user trigger).
-5. Open **Storage** and create a public bucket named `vyral-media`.
+2. Go to the **SQL Editor** in your Supabase dashboard.
+3. Run `supabase/migrations/001_initial_schema.sql` to create the schema, tables, indexes, and constraints.
+4. Run `supabase/migrations/002_rls_policies.sql` to enable Row Level Security and the new user trigger.
+5. In **Storage**, create a new public bucket named `mythora-media`.
 6. From **Project Settings > API & Database**, copy:
    - Project URL (`SUPABASE_URL`)
    - Anon public key (`SUPABASE_ANON_KEY`)
    - Service role key (`SUPABASE_SERVICE_ROLE_KEY`)
-   - Database password and connection pooler string (host, port, user).
+   - Connection pooler details (Host, Port, User, Database name, Password).
 
 ---
 
-## 2. Render (Backend API + FFmpeg)
+## 2. Render Web Service (PHP 8.2 Backend API)
 
-1. Create an account or sign in to [render.com](https://render.com).
-2. Click **New + > Web Service** and connect this repository.
+1. Sign in to [render.com](https://render.com) and click **New + > Web Service**.
+2. Connect your GitHub repository.
 3. Configure the service:
-   - **Name**: `vyral-studio-backend`
-   - **Language / Runtime**: `Docker`
+   - **Name**: `mythora-api`
+   - **Runtime**: `Docker`
    - **Dockerfile Path**: `backend/Dockerfile`
-   - **Plan**: Starter (or higher for faster FFmpeg rendering)
+   - **Plan**: Starter
 4. Add the following **Environment Variables**:
-   ```
+   ```env
    APP_ENV=production
-   DB_HOST=<your-supabase-db-host>
+   DB_HOST=<supabase-db-host>
    DB_PORT=6543
    DB_NAME=postgres
    DB_USER=postgres.<your-project-ref>
    DB_PASSWORD=<your-db-password>
    SUPABASE_URL=https://<your-project-ref>.supabase.co
    SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+   SUPABASE_STORAGE_BUCKET=mythora-media
    GEMINI_API_KEY=<your-gemini-api-key>
+   ELEVENLABS_API_KEY=<your-elevenlabs-api-key>
    FFMPEG_PATH=ffmpeg
    ```
-5. Click **Create Web Service**. Once deployed, Render will give you a public URL (e.g., `https://vyral-studio-backend.onrender.com`).
+5. Deploy the Web Service. Copy the assigned URL (e.g., `https://mythora-api.onrender.com`).
 
 ---
 
-## 3. Netlify (Frontend)
+## 3. Render Background Worker (PHP CLI + FFmpeg)
 
-1. Sign in to [netlify.com](https://netlify.com) and click **Add new site > Import an existing project**.
-2. Select your repository.
-3. Configure build settings:
-   - **Base directory**: `frontend`
-   - **Publish directory**: `frontend`
-   - **Build command**: *(leave blank)*
-4. Update `frontend/netlify.toml`:
-   Point the API redirect rule to your Render URL:
-   ```toml
-   [[redirects]]
-     from = "/api/*"
-     to = "https://your-backend-name.onrender.com/api/:splat"
-     status = 200
-     force = true
-   ```
-5. Click **Deploy Site**.
+Video rendering runs asynchronously outside the web request cycle via a dedicated worker:
 
----
-
-## 4. Background Rendering Worker (Optional)
-
-For high-volume rendering separate from API web workers:
 1. On Render, click **New + > Background Worker**.
-2. Point to the same repository and Dockerfile.
-3. Set the start command to:
-   ```bash
-   php worker/worker.php
-   ```
-4. Attach the same environment variables as the backend Web Service.
+2. Connect the same repository.
+3. Configure the worker:
+   - **Name**: `mythora-worker`
+   - **Runtime**: `Docker`
+   - **Dockerfile Path**: `backend/Dockerfile`
+   - **Start Command**: `php worker/worker.php`
+   - **Plan**: Starter (or Standard for faster FFmpeg encoding)
+4. Add the exact same **Environment Variables** used in the Web Service above.
+5. Deploy the worker. It will immediately begin polling the PostgreSQL `generation_jobs` table for pending tasks.
+
+---
+
+## 4. Render Static Site (Frontend)
+
+1. On Render, click **New + > Static Site**.
+2. Connect your repository.
+3. Configure the static site:
+   - **Name**: `mythora`
+   - **Branch**: `master` (or `main`)
+   - **Root Directory**: `frontend`
+   - **Publish Directory**: `.`
+   - **Build Command**: *(leave empty)*
+4. Under **Redirects/Rewrites**, add an API proxy rule:
+   - **Source**: `/api/*`
+   - **Destination**: `https://mythora-api.onrender.com/api/*`
+   - **Action**: `Rewrite`
+5. Deploy the Static Site. Your application is live at `https://mythora.onrender.com`.

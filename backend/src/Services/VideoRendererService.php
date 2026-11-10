@@ -54,27 +54,29 @@ class VideoRendererService {
         $publicMp4 = $publicDir . "/video_{$projectId}.mp4";
 
         // Generate synthetic demo video directly with FFmpeg lavfi generator
-        // This ensures guaranteed cross-platform rendering without depending on external web image downloads
         $duration = count($scenes) * 4; // 4 seconds per scene
-        $titleEscaped = escapeshellarg($project['title'] ?? 'VYRAL STUDIO');
-        $subtitleEscaped = escapeshellarg("Turn Ideas Into Stories | " . $project['visual_style']);
+        $titleEscaped = escapeshellarg($project['title'] ?? 'MYTHORA');
+        $subtitleEscaped = escapeshellarg("Turn Ideas Into Stories | " . ($project['visual_style'] ?? 'Cinematic'));
 
         // Build FFmpeg command with animated color gradient, title overlay, and test audio tone
         $cmd = "{$this->ffmpegPath} -y -f lavfi -i testsrc=size={$width}x{$height}:rate=30 -f lavfi -i sine=frequency=440:duration={$duration} "
              . "-t {$duration} -pix_fmt yuv420p "
              . "-vf \"drawtext=text={$titleEscaped}:fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2-60,drawtext=text={$subtitleEscaped}:fontcolor=0x10b981:fontsize=28:x=(w-text_w)/2:y=(h-text_h)/2+40\" "
-             . "-c:v libx264 -c:a aac -shortest " . escapeshellarg($publicMp4) . " 2>&1";
+             . "-c:v libx264 -c:a aac -shortest " . escapeshellarg($outputMp4) . " 2>&1";
 
         exec($cmd, $outputLines, $returnCode);
 
         if ($returnCode !== 0) {
-            // Log fallback error if ffmpeg failed
             error_log("FFmpeg execution log: " . implode("\n", $outputLines));
             throw new \Exception("FFmpeg rendering failed with code: {$returnCode}");
         }
 
-        $fileSize = file_exists($publicMp4) ? filesize($publicMp4) : 0;
-        $downloadUrl = "/renders/video_{$projectId}.mp4";
+        $fileSize = file_exists($outputMp4) ? filesize($outputMp4) : 0;
+
+        // Upload permanent file to Supabase Storage (No local Render disk dependency)
+        $storage = new SupabaseStorageService();
+        $remotePath = "renders/{$projectId}/video_{$jobId}.mp4";
+        $downloadUrl = $storage->uploadFile($outputMp4, $remotePath, 'video/mp4');
 
         // Save into videos table
         $vidId = 'vid_' . bin2hex(random_bytes(8));
@@ -86,13 +88,18 @@ class VideoRendererService {
             ':id' => $vidId,
             ':pid' => $projectId,
             ':uid' => $project['user_id'],
-            ':path' => $publicMp4,
+            ':path' => $remotePath,
             ':url' => $downloadUrl,
             ':dur' => $duration,
             ':size' => $fileSize,
             ':res' => "{$width}x{$height}",
             ':aspect' => $aspectRatio
         ]);
+
+        // Clean up temporary local scratch file
+        if (file_exists($outputMp4)) {
+            @unlink($outputMp4);
+        }
 
         return [
             'video_id' => $vidId,

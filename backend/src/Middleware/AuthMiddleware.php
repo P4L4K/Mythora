@@ -52,7 +52,7 @@ class AuthMiddleware {
 
         if (!$user) {
             // Auto register profile for Supabase-authenticated user
-            $email = $payload['email'] ?? "user_{$userId}@vyralstudio.com";
+            $email = $payload['email'] ?? "user_{$userId}@mythora.app";
             $displayName = $payload['user_metadata']['full_name'] ?? explode('@', $email)[0];
             
             $insert = $pdo->prepare("

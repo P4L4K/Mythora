@@ -4,8 +4,8 @@
  */
 class AuthService {
   constructor() {
-    this.tokenKey = 'vyral_access_token';
-    this.userKey = 'vyral_user';
+    this.tokenKey = 'mythora_access_token';
+    this.userKey = 'mythora_user';
   }
 
   isAuthenticated() {

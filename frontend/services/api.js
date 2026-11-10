@@ -4,11 +4,11 @@
  */
 class ApiClient {
   constructor(baseUrl) {
-    this.baseUrl = baseUrl || window.VYRAL_CONFIG.API_BASE_URL;
+    this.baseUrl = baseUrl || (window.MYTHORA_CONFIG ? window.MYTHORA_CONFIG.API_BASE_URL : '/api');
   }
 
   getAuthHeader() {
-    const token = localStorage.getItem('vyral_access_token');
+    const token = localStorage.getItem('mythora_access_token') || localStorage.getItem('vyral_access_token');
     return token ? { 'Authorization': `Bearer ${token}` } : {};
   }
 
@@ -33,8 +33,8 @@ class ApiClient {
       
       // Auto-handle 401 Unauthorized
       if (response.status === 401 && !endpoint.includes('/auth/login')) {
-        localStorage.removeItem('vyral_access_token');
-        localStorage.removeItem('vyral_user');
+        localStorage.removeItem('mythora_access_token');
+        localStorage.removeItem('mythora_user');
         if (!window.location.pathname.includes('login.html') && !window.location.pathname.endsWith('index.html')) {
           window.location.href = '/login.html?expired=true';
         }
