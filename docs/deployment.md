@@ -19,7 +19,11 @@ This guide details how to deploy MYTHORA across **Render** (Frontend Static Site
 
 ---
 
-## 2. Render Web Service (PHP 8.2 Backend API)
+## 2. Render Web Service (PHP 8.2 Backend API + Embedded Video Rendering)
+
+> **Free Tier Architecture Note**: On Render, standalone "Background Workers" require a paid plan ($7/mo minimum). To run **100% FREE on Render**, you do **NOT** need to create a Background Worker! 
+> 
+> The MYTHORA backend Docker container includes both PHP and FFmpeg inside the **Free Web Service**. When the frontend triggers `/api/generation/start`, the Web Service executes `VideoRendererService` and renders the video directly inside the container, uploading it to Supabase Storage.
 
 1. Sign in to [render.com](https://render.com) and click **New + > Web Service**.
 2. Connect your GitHub repository.
@@ -27,11 +31,11 @@ This guide details how to deploy MYTHORA across **Render** (Frontend Static Site
    - **Name**: `mythora-api`
    - **Runtime**: `Docker`
    - **Dockerfile Path**: `backend/Dockerfile`
-   - **Plan**: Starter
+   - **Plan**: **Free** ($0/month)
 4. Add the following **Environment Variables**:
    ```env
    APP_ENV=production
-   DB_HOST=<supabase-db-host>
+   DB_HOST=<supabase-pooler-host>
    DB_PORT=6543
    DB_NAME=postgres
    DB_USER=postgres.<your-project-ref>
@@ -41,29 +45,13 @@ This guide details how to deploy MYTHORA across **Render** (Frontend Static Site
    SUPABASE_STORAGE_BUCKET=mythora-media
    GEMINI_API_KEY=<your-gemini-api-key>
    FFMPEG_PATH=ffmpeg
+   FFPROBE_PATH=ffprobe
    ```
 5. Deploy the Web Service. Copy the assigned URL (e.g., `https://mythora-api.onrender.com`).
 
 ---
 
-## 3. Render Background Worker (PHP CLI + FFmpeg)
-
-Video rendering runs asynchronously outside the web request cycle via a dedicated worker:
-
-1. On Render, click **New + > Background Worker**.
-2. Connect the same repository.
-3. Configure the worker:
-   - **Name**: `mythora-worker`
-   - **Runtime**: `Docker`
-   - **Dockerfile Path**: `backend/Dockerfile`
-   - **Start Command**: `php worker/worker.php`
-   - **Plan**: Starter (or Standard for faster FFmpeg encoding)
-4. Add the exact same **Environment Variables** used in the Web Service above.
-5. Deploy the worker. It will immediately begin polling the PostgreSQL `generation_jobs` table for pending tasks.
-
----
-
-## 4. Render Static Site (Frontend)
+## 3. Render Static Site (Frontend - 100% Free)
 
 1. On Render, click **New + > Static Site**.
 2. Connect your repository.
@@ -78,3 +66,15 @@ Video rendering runs asynchronously outside the web request cycle via a dedicate
    - **Destination**: `https://mythora-api.onrender.com/api/*`
    - **Action**: `Rewrite`
 5. Deploy the Static Site. Your application is live at `https://mythora.onrender.com`.
+
+---
+
+## Summary of Free 2-Service Topology
+
+| Service | Type | Cost | Purpose |
+|---|---|---|---|
+| **`mythora`** | Static Site | **$0 / Free** | Vanilla JS/HTML5 Frontend UI, 3D Canvas, Studio & Generator |
+| **`mythora-api`** | Web Service (Docker) | **$0 / Free** | PHP 8.2 API, Supabase Adapter, Gemini AI & In-container FFmpeg Rendering |
+| **`Supabase`** | Database / Storage | **$0 / Free** | PostgreSQL Database, Auth, and `mythora-media` Video Storage Bucket |
+
+*(No paid Background Worker is needed)*

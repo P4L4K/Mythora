@@ -53,6 +53,16 @@ function jsonResponse($data, int $statusCode = 200): void {
 
 // ROUTER DISPATCH
 try {
+    // 0. HEALTH CHECK & DIAGNOSTICS
+    if ($method === 'GET' && (str_ends_with($requestUri, '/api/health') || str_ends_with($requestUri, '/health') || $requestUri === '/')) {
+        jsonResponse([
+            'status' => 'online',
+            'app' => 'MYTHORA API',
+            'driver' => \App\Database\Database::getDriver(),
+            'timestamp' => time()
+        ]);
+    }
+
     // 1. AUTH ROUTES
     if ($method === 'POST' && str_ends_with($requestUri, '/api/auth/register')) {
         $email = trim($body['email'] ?? '');
@@ -222,6 +232,29 @@ try {
         $projectId = $body['project_id'] ?? null;
         if (!$projectId) jsonResponse(['error' => 'project_id required'], 400);
 
+        // Fetch project for duration check
+        $pCheckStmt = $pdo->prepare("SELECT * FROM projects WHERE id = :id AND user_id = :uid");
+        $pCheckStmt->execute([':id' => $projectId, ':uid' => $currentUser['id']]);
+        $projectToRender = $pCheckStmt->fetch();
+        if (!$projectToRender) jsonResponse(['error' => 'Project not found'], 404);
+
+        // Part 3: Pre-generation Storage Headroom & Limit Validation
+        $storageMonitor = new \App\Services\StorageMonitorService();
+        $headroom = $storageMonitor->validateHeadroomForGeneration(
+            $pdo,
+            $currentUser['id'],
+            (float)($projectToRender['target_duration_sec'] ?? 30.0),
+            $projectToRender['aspect_ratio'] ?? '9:16'
+        );
+
+        if (!$headroom['allowed']) {
+            jsonResponse([
+                'error' => $headroom['reason'],
+                'storage_status' => $headroom['metrics']['status'],
+                'storage_manager_url' => '/pages/storage.html'
+            ], 403);
+        }
+
         // Deduct 10 Credits
         if ($currentUser['credits_balance'] < 10) {
             jsonResponse(['error' => 'Insufficient credits. Top up required.'], 402);
@@ -253,6 +286,10 @@ try {
         } catch (\Exception $e) {
             $pdo->prepare("UPDATE generation_jobs SET status = 'failed', current_stage = 'failed', error_message = :err WHERE id = :id")
                 ->execute([':err' => $e->getMessage(), ':id' => $jobId]);
+            // Refund credits on render failure
+            $pdo->prepare("UPDATE profiles SET credits_balance = credits_balance + 10 WHERE id = :id")->execute([':id' => $currentUser['id']]);
+            $pdo->prepare("INSERT INTO credit_transactions (id, user_id, amount, transaction_type, description, reference_id) VALUES (:id, :uid, 10, 'refund', 'Refund for failed video generation', :ref)")
+                ->execute([':id' => \App\Database\Database::generateId('tx'), ':uid' => $currentUser['id'], ':ref' => $jobId]);
             jsonResponse(['job_id' => $jobId, 'status' => 'failed', 'error' => $e->getMessage()], 500);
         }
     }
@@ -331,7 +368,57 @@ try {
         ]);
     }
 
-    // 9. ADMIN TELEMETRY
+    // 9. STORAGE MANAGER ENDPOINTS (Part 2)
+    $storageMonitor = new \App\Services\StorageMonitorService();
+
+    // 9A. Storage Metrics & Warning Thresholds
+    if ($method === 'GET' && str_ends_with($requestUri, '/api/storage/metrics')) {
+        $metrics = $storageMonitor->getStorageMetrics($pdo, $currentUser['id']);
+        jsonResponse($metrics);
+    }
+
+    // 9B. List Stored Videos with Project Metadata
+    if ($method === 'GET' && str_ends_with($requestUri, '/api/storage/videos')) {
+        $filters = [
+            'sort' => $_GET['sort'] ?? 'newest',
+            'search' => $_GET['search'] ?? ''
+        ];
+        $videos = $storageMonitor->listStoredVideos($pdo, $currentUser['id'], $filters);
+        jsonResponse(['videos' => $videos]);
+    }
+
+    // 9C. Delete Rendered Video (Preserves Project & Scenes)
+    if ($method === 'DELETE' && preg_match('#/api/storage/videos/([^/]+)$#', $requestUri, $matches)) {
+        $videoId = $matches[1];
+        try {
+            $storageMonitor->deleteRenderedVideo($pdo, $currentUser['id'], $videoId);
+            $newMetrics = $storageMonitor->getStorageMetrics($pdo, $currentUser['id']);
+            jsonResponse([
+                'success' => true,
+                'message' => 'Rendered video deleted successfully from cloud storage. Project and scenes preserved.',
+                'metrics' => $newMetrics
+            ]);
+        } catch (\Exception $e) {
+            jsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    // 9D. Bulk Delete Rendered Videos (Preserves Projects)
+    if ($method === 'POST' && str_ends_with($requestUri, '/api/storage/videos/bulk-delete')) {
+        $videoIds = $body['video_ids'] ?? [];
+        if (!is_array($videoIds) || empty($videoIds)) {
+            jsonResponse(['error' => 'video_ids array required'], 400);
+        }
+        $result = $storageMonitor->deleteMultipleVideos($pdo, $currentUser['id'], $videoIds);
+        $newMetrics = $storageMonitor->getStorageMetrics($pdo, $currentUser['id']);
+        jsonResponse([
+            'success' => true,
+            'result' => $result,
+            'metrics' => $newMetrics
+        ]);
+    }
+
+    // 10. ADMIN TELEMETRY
     if ($method === 'GET' && str_ends_with($requestUri, '/api/admin/statistics')) {
         $uCount = $pdo->query("SELECT COUNT(*) FROM profiles")->fetchColumn();
         $rCount = $pdo->query("SELECT COUNT(*) FROM videos")->fetchColumn();

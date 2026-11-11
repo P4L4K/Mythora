@@ -47,6 +47,10 @@ class Database {
         return self::$instance;
     }
 
+    public static function getDriver(): string {
+        return self::$driver;
+    }
+
     public static function generateId(string $prefix = ''): string {
         if (self::$driver === 'pgsql') {
             // Generate standard RFC 4122 v4 UUID

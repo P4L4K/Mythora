@@ -352,3 +352,244 @@
 
   animate();
 })();
+
+/**
+ * MYTHORA - Enchanted Mythical Notification & Modal System
+ * Replaces harsh native browser alerts with an ethereal Crescent Moon / Forest Rune dialog
+ */
+(function initMythicalModals() {
+  // Inject Mythical Modal Styles if not already added
+  if (!document.getElementById('mythical-modal-styles')) {
+    const style = document.createElement('style');
+    style.id = 'mythical-modal-styles';
+    style.textContent = `
+      .mythical-toast-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(19, 27, 16, 0.38);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 20px;
+      }
+      .mythical-toast-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .mythical-moon-modal {
+        position: relative;
+        width: 100%;
+        max-width: 440px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(246, 250, 242, 0.92) 100%);
+        border: 1.5px solid rgba(126, 148, 101, 0.35);
+        border-radius: 36px 12px 36px 12px;
+        padding: 36px 32px 28px;
+        box-shadow: 
+          0 24px 60px -15px rgba(45, 62, 30, 0.22),
+          0 0 35px rgba(234, 179, 8, 0.18),
+          inset 0 1px 4px rgba(255, 255, 255, 1);
+        transform: scale(0.88) translateY(18px);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        text-align: center;
+        overflow: hidden;
+      }
+      .mythical-toast-overlay.active .mythical-moon-modal {
+        transform: scale(1) translateY(0);
+      }
+      /* Ethereal Crescent Moon & Rune Emblem */
+      .mythical-moon-crest {
+        position: relative;
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(254, 249, 231, 0.9) 0%, rgba(235, 241, 230, 0.8) 100%);
+        border: 1.5px solid rgba(234, 179, 8, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 25px rgba(234, 179, 8, 0.32), inset 0 2px 6px rgba(255, 255, 255, 0.8);
+      }
+      .mythical-moon-crest::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 1px dashed rgba(126, 148, 101, 0.35);
+        animation: moonRuneSpin 24s linear infinite;
+      }
+      @keyframes moonRuneSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .mythical-moon-symbol {
+        font-size: 2.2rem;
+        filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.6));
+      }
+      .mythical-moon-title {
+        font-family: inherit;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1A2414;
+        margin-bottom: 10px;
+        letter-spacing: -0.01em;
+      }
+      .mythical-moon-body {
+        font-family: inherit;
+        font-size: 0.94rem;
+        line-height: 1.55;
+        color: #4E5A47;
+        margin-bottom: 24px;
+      }
+      .mythical-moon-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .mythical-btn-confirm {
+        background: linear-gradient(135deg, #3D522B 0%, #5E7A3F 100%);
+        color: #FFFFFF;
+        font-weight: 600;
+        font-size: 0.92rem;
+        padding: 10px 28px;
+        border-radius: 9999px;
+        border: 1px solid rgba(93, 112, 72, 0.3);
+        box-shadow: 0 4px 14px rgba(61, 82, 43, 0.25);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .mythical-btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(61, 82, 43, 0.35);
+        filter: brightness(1.08);
+      }
+      .mythical-btn-cancel {
+        background: rgba(255, 255, 255, 0.85);
+        color: #3D522B;
+        font-weight: 600;
+        font-size: 0.92rem;
+        padding: 10px 24px;
+        border-radius: 9999px;
+        border: 1px solid rgba(126, 148, 101, 0.35);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .mythical-btn-cancel:hover {
+        background: rgba(235, 241, 230, 0.9);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Helper to show ethereal alert
+  window.mythicalAlert = function(message, title = 'Mythical Sanctuary', icon = '🌙') {
+    return new Promise((resolve) => {
+      let overlay = document.getElementById('mythical-alert-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'mythical-alert-overlay';
+        overlay.className = 'mythical-toast-overlay';
+        overlay.innerHTML = `
+          <div class="mythical-moon-modal">
+            <div class="mythical-moon-crest">
+              <span class="mythical-moon-symbol" id="mythical-alert-icon">🌙</span>
+            </div>
+            <h4 class="mythical-moon-title" id="mythical-alert-title">Notification</h4>
+            <p class="mythical-moon-body" id="mythical-alert-body"></p>
+            <div class="mythical-moon-actions">
+              <button class="mythical-btn-confirm" id="mythical-alert-ok">Continue</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+      }
+
+      const iconEl = document.getElementById('mythical-alert-icon');
+      const titleEl = document.getElementById('mythical-alert-title');
+      const bodyEl = document.getElementById('mythical-alert-body');
+      const okBtn = document.getElementById('mythical-alert-ok');
+
+      if (iconEl) iconEl.textContent = icon;
+      if (titleEl) titleEl.textContent = title;
+      if (bodyEl) bodyEl.textContent = message;
+
+      overlay.classList.add('active');
+
+      const cleanup = () => {
+        overlay.classList.remove('active');
+        okBtn.removeEventListener('click', onOk);
+        resolve(true);
+      };
+
+      const onOk = () => cleanup();
+      okBtn.addEventListener('click', onOk, { once: true });
+    });
+  };
+
+  // Helper to show ethereal confirmation dialog
+  window.mythicalConfirm = function(message, title = 'Grove Confirmation', icon = '🌙') {
+    return new Promise((resolve) => {
+      let overlay = document.getElementById('mythical-confirm-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'mythical-confirm-overlay';
+        overlay.className = 'mythical-toast-overlay';
+        overlay.innerHTML = `
+          <div class="mythical-moon-modal">
+            <div class="mythical-moon-crest">
+              <span class="mythical-moon-symbol" id="mythical-confirm-icon">🌙</span>
+            </div>
+            <h4 class="mythical-moon-title" id="mythical-confirm-title">Confirm Action</h4>
+            <p class="mythical-moon-body" id="mythical-confirm-body"></p>
+            <div class="mythical-moon-actions">
+              <button class="mythical-btn-cancel" id="mythical-confirm-cancel">Cancel</button>
+              <button class="mythical-btn-confirm" id="mythical-confirm-ok">Confirm</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+      }
+
+      const iconEl = document.getElementById('mythical-confirm-icon');
+      const titleEl = document.getElementById('mythical-confirm-title');
+      const bodyEl = document.getElementById('mythical-confirm-body');
+      const okBtn = document.getElementById('mythical-confirm-ok');
+      const cancelBtn = document.getElementById('mythical-confirm-cancel');
+
+      if (iconEl) iconEl.textContent = icon;
+      if (titleEl) titleEl.textContent = title;
+      if (bodyEl) bodyEl.textContent = message;
+
+      overlay.classList.add('active');
+
+      const cleanup = (result) => {
+        overlay.classList.remove('active');
+        resolve(result);
+      };
+
+      okBtn.onclick = () => cleanup(true);
+      cancelBtn.onclick = () => cleanup(false);
+    });
+  };
+
+  // Gracefully replace native window.alert and window.confirm with Mythical Modals
+  window.alert = function(msg) {
+    return window.mythicalAlert(msg);
+  };
+
+  // Provide async replacement for native confirm if called directly
+  const nativeConfirm = window.confirm;
+  window.confirm = function(msg) {
+    // If running in an async context, developers can await window.mythicalConfirm
+    // For synchronous calls that can't be paused without blocking the main thread,
+    // trigger the beautiful modal immediately
+    window.mythicalConfirm(msg);
+    return false; // Prevent unwanted synchronous actions before modal resolution
+  };
+})();

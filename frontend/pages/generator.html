@@ -69,6 +69,7 @@
         <a href="/pages/library.html" class="nav-item"><span>📁</span> <span>Project Library</span></a>
         <a href="/pages/brand-studio.html" class="nav-item"><span>🧬</span> <span>Content DNA</span></a>
         <a href="/pages/credits.html" class="nav-item"><span>⚡</span> <span>Credits & Plans</span></a>
+        <a href="/pages/storage.html" class="nav-item"><span>💾</span> <span>Storage Sanctuary</span></a>
       </nav>
 
       <div class="sidebar-footer">
@@ -378,13 +379,33 @@
             window.location.href = `/pages/editor.html?project_id=${projectId}&ready=true`;
           },
           (err) => {
-            alert('Generation error: ' + err.message);
             generationPortal.classList.remove('active');
+            if (err.message && (err.message.includes('Storage capacity') || err.message.includes('storage') || err.message.includes('quota'))) {
+              window.mythicalConfirm(
+                err.message + '\n\nWould you like to open the Storage Sanctuary to free up space?',
+                'Storage Capacity Reached',
+                '💾'
+              ).then(confirmed => {
+                if (confirmed) window.location.href = '/pages/storage.html';
+              });
+            } else {
+              window.mythicalAlert('Generation error: ' + err.message, 'Generation Notice', '⚠️');
+            }
           }
         );
       } catch (err) {
-        alert('Could not start generation: ' + err.message);
         generationPortal.classList.remove('active');
+        if (err.message && (err.message.includes('Storage capacity') || err.message.includes('storage') || err.message.includes('quota'))) {
+          window.mythicalConfirm(
+            err.message + '\n\nWould you like to open the Storage Sanctuary to free up space?',
+            'Storage Capacity Reached',
+            '💾'
+          ).then(confirmed => {
+            if (confirmed) window.location.href = '/pages/storage.html';
+          });
+        } else {
+          window.mythicalAlert('Could not start generation: ' + err.message, 'Generation Notice', '⚠️');
+        }
       }
     });
 

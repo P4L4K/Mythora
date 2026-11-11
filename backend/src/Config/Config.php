@@ -36,6 +36,10 @@ class Config {
     }
 
     public static function get(string $key, mixed $default = null): mixed {
-        return self::$env[$key] ?? $_ENV[$key] ?? getenv($key) ?: $default;
+        $val = self::$env[$key] ?? $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+        if ($val === false || $val === null || $val === '') {
+            return $default;
+        }
+        return $val;
     }
 }
