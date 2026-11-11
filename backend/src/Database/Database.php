@@ -30,8 +30,8 @@ class Database {
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                         PDO::ATTR_EMULATE_PREPARES => false,
-                        PDO::ATTR_TIMEOUT => 5,
-                        PDO::ATTR_PERSISTENT => true
+                        PDO::ATTR_TIMEOUT => 8,
+                        PDO::ATTR_PERSISTENT => false
                     ]);
                     self::$driver = 'pgsql';
                 } catch (PDOException $e) {
@@ -59,7 +59,7 @@ class Database {
     }
 
     private static function createSqliteFallback(): PDO {
-        $storageDir = __DIR__ . '/../../../storage';
+        $storageDir = sys_get_temp_dir() . '/mythora_storage';
         if (!is_dir($storageDir)) {
             @mkdir($storageDir, 0777, true);
         }
